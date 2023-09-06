@@ -52,7 +52,7 @@ M.tabufline = {
 		-- close all buffers
 		["<leader>ax"] = {
 			function()
-				require("nvchad_ui.tabufline").closeOtherBufs()
+				require("nvchad.tabufline").closeOtherBufs()
 			end,
 			"close all buffer except current buffer",
 		},
