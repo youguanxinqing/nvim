@@ -21,3 +21,7 @@
 -- vim.o.winbar = "%{%v:lua.require'custom.configs.nvim-navic'.get_winbar()%}"
 --
 --
+--
+
+-- https://snippet-generator.app/
+vim.g.vscode_snippets_path = "./lua/custom/snippets"

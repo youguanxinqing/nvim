@@ -1,0 +1,21 @@
+{
+  "extendconf": {
+    "prefix": "trpc-extendconf-init",
+    "body": [
+      "type $ConfName struct {",
+      "  field string `json:\"field\"`",
+      "}",
+      "",
+      "func (conf *ConfName) NodePath() string {",
+	    "    return \"ConfName-conf\"",
+      "}",
+      "",
+      "func (conf *ConfName) Validate() {}",
+      "",
+      "func (conf *ConfName) NodeEnable() bool {",
+	    "    return true",
+      "}"
+    ],
+    "description": "trpc extendconf init"
+  }
+}
