@@ -43,14 +43,12 @@ function M.splitn(s, sep, n)
   if n > (chunk_len - 1) then
     n = chunk_len - 1
   end
-  print(n)
 
   local new_chunks = {}
   for i = 0, (n - 1) do
     table.insert(new_chunks, chunks[i + 1])
   end
 
-  print(vim.inspect(new_chunks))
   table.insert(new_chunks, vim.fn.join(vim.fn.slice(chunks, n, chunk_len), sep))
   return new_chunks
 end
