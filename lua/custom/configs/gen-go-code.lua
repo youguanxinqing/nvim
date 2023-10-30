@@ -27,7 +27,8 @@ end
 --- @return table, 0|1
 function enum_line:new_from_string(line)
   local items = {}
-  for item in string.gmatch(line, '["=+0-9a-zA-Z]+') do
+  local line_without_comment = string_utils.splitn(line, "//", 1)[1]
+  for item in string.gmatch(line_without_comment, '["=+0-9a-zA-Z]+') do
     table.insert(items, item)
   end
 
@@ -45,11 +46,11 @@ function enum_line:new_from_string(line)
     return {}, 0
   end
 
-  if validator_utils.is_identifier(obj.name) == 0 then
+  if not validator_utils.is_identifier(obj.name) then
     return {}, 0
   end
 
-  if string.len(obj.typ) > 0 and validator_utils.is_identifier(obj.typ) == 0 then
+  if string.len(obj.typ) > 0 and not validator_utils.is_identifier(obj.typ) then
     return {}, 0
   end
 
@@ -128,8 +129,14 @@ function M.enum_to_string()
 
   local code_stmt = {}
 
+  local first = new_lines[1]
+  if not validator_utils.is_identifier(first.typ) then
+    error(string.format("not enum type err: %s", vim.inspect(first)))
+    return
+  end
+
   -- if value is digtal
-  if tonumber(new_lines[1].value) then
+  if tonumber(first.value) then
     for _, line in pairs(new_lines) do
       table.insert(code_stmt, string.format(case_template, line.name))
       table.insert(code_stmt, string.format(return_template, line.name))

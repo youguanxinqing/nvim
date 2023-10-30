@@ -1,3 +1,5 @@
+local table_utils = require "custom.utils.table"
+
 local M = {}
 
 --- M.strip
@@ -49,7 +51,7 @@ function M.splitn(s, sep, n)
     table.insert(new_chunks, chunks[i + 1])
   end
 
-  table.insert(new_chunks, vim.fn.join(vim.fn.slice(chunks, n, chunk_len), sep))
+  table.insert(new_chunks, vim.fn.join(table_utils.slice(chunks, n, chunk_len), sep))
   return new_chunks
 end
 
