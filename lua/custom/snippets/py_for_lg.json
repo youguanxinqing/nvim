@@ -1,0 +1,9 @@
+{
+  "extendconf": {
+    "prefix": "lint-except",
+    "body": [
+      "# pylint:disable=broad-except"
+    ],
+    "description": "lint: disable broad except"
+  }
+}

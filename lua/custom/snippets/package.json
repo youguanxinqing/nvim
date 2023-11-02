@@ -7,6 +7,12 @@
 					"go"
 				],
 				"path": "./go_for_artemis.json"
+			},
+			{
+				"language": [
+					"python"
+				],
+				"path": "./py_for_lg.json"
 			}
 		]
 	}
