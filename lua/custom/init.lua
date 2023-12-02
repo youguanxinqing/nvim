@@ -27,8 +27,8 @@
 vim.g.vscode_snippets_path = "./lua/custom/snippets"
 
 vim.cmd [[
-command! GenGoEnumToString lua require("custom.configs.gen-go-code").enum_to_string()
-command! RunGoUnitTest lua require("custom.configs.run-anything").run_unit_test_for_go()
+autocmd FileType go command! GoGenEnumToString lua require("custom.configs.gen-go-code").enum_to_string()
+autocmd FileType go command! GoRunUnitTest lua require("custom.configs.run-anything").run_unit_test_for_go()
 
 command! UncolorAllWords lua require("interestingwords").UncolorAllWords()
 ]]

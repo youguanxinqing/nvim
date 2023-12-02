@@ -4,9 +4,17 @@ local M = {}
 
 --- M.run_unit_test_for_go run unit test
 function M.run_unit_test_for_go()
-  local unit_name = string.match(vim.api.nvim_get_current_line(), "(Test[a-zA-Z0-9]+)")
+  local cur_line = vim.api.nvim_get_current_line()
+  local unit_name = string.match(cur_line, "(Test[a-zA-Z0-9]+)")
+  if unit_name == nil then
+    error(string.format("invalid test unit name in golang: '%s'", cur_line))
+    return
+  end
+
   local cmd = "go test -v " .. buf_utils.get_cur_buf_dir() .. "*.go -run " .. unit_name
-  print(cmd)
+  local terminal = require "nvterm.terminal"
+  terminal.toggle "float"
+  terminal.send(cmd, "float")
 end
 
 return M
