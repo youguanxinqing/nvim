@@ -1,9 +1,30 @@
 {
-  "extendconf": {
+  "Disable Pylint Broad Except": {
     "prefix": "lint-except",
     "body": [
       "# pylint:disable=broad-except"
     ],
     "description": "lint: disable broad except"
+  },
+  "Dataclass Create Method": {
+    "prefix": "create-method-of-dataclass",
+    "body": [
+      "\n",
+      "@classmethod",
+      "def create(cls, **kwargs) -> \"$CLASS_NAME\":",
+      "    from dataclasses import fields, MISSING",
+      "",
+      "    _attrs = fields(cls)",
+      "",
+      "    new_kwargs = {}",
+      "    for _attr in _attrs:",
+      "        if _attr.name not in kwargs:",
+      "            _val = _attr.default if _attr.default != MISSING else None",
+      "            new_kwargs[_attr.name] = _val",
+      "        else:",
+      "            new_kwargs[_attr.name] = kwargs[_attr.name]",
+      "    return cls(**new_kwargs)"
+      ],
+    "description": "generate create method of dataclass"
   }
 }
