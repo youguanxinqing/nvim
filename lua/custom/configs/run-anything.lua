@@ -17,4 +17,14 @@ function M.run_unit_test_for_go()
   terminal.send(cmd, "float")
 end
 
+--- M.run_current_script_for_py run current script
+function M.run_current_script_for_py()
+  local project_root_dir = vim.loop.cwd()
+  local cmd = string.format("export PYTHONPATH=%s && python %s", project_root_dir, buf_utils.get_cur_buf_file())
+
+  local terminal = require "nvterm.terminal"
+  terminal.toggle "float"
+  terminal.send(cmd, "float")
+end
+
 return M

@@ -30,5 +30,7 @@ vim.cmd [[
 autocmd FileType go command! GoGenEnumToString lua require("custom.configs.gen-go-code").enum_to_string()
 autocmd FileType go command! GoRunUnitTest lua require("custom.configs.run-anything").run_unit_test_for_go()
 
+autocmd FileType python command! PyRun lua require("custom.configs.run-anything").run_current_script_for_py()
+
 command! UncolorAllWords lua require("interestingwords").UncolorAllWords()
 ]]
