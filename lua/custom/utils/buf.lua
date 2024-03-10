@@ -17,4 +17,10 @@ function M.get_cur_buf_file()
   return "." .. relative_filepath
 end
 
+-- M.get_cur_buf_path return abs path of current buffer
+function M.get_cur_buf_path()
+  local abs_path = vim.api.nvim_buf_get_name(0)
+  return abs_path
+end
+
 return M
