@@ -20,7 +20,16 @@ M.general = {
       "copy current buffer abs path",
     },
     ["<leader>bn"] = { "<cmd> enew <CR>", "New buffer" },
+
+    -- search
+    ["<Leader>fd"] = {
+      function()
+        require("custom.configs.telescope.dir_search").search_in_cur_dir()
+      end,
+      "search in current directory",
+    },
   },
+
   i = {
     ["<C-c>"] = { "<Esc>", "exit insert mode", opts = { nowait = true } },
   },
