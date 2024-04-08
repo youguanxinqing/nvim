@@ -257,6 +257,10 @@ local plugins = {
       }
     end,
   },
+
+  {
+    "MunifTanjim/nui.nvim",
+  },
 }
 
 return plugins
