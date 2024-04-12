@@ -34,3 +34,7 @@ autocmd FileType python command! PyRun lua require("custom.configs.run-anything"
 
 command! UncolorAllWords lua require("interestingwords").UncolorAllWords()
 ]]
+
+if vim.g.neovide then
+  require "custom.neovide"
+end
