@@ -55,4 +55,22 @@ function M.splitn(s, sep, n)
   return new_chunks
 end
 
+--- M.escape
+--- @param s string
+--- @return string
+function M.escape(s)
+  local new_str = string.gsub(s, "[%(%)%.%%%+%-%*%?%[%^%$%]]", "%%%1")
+  return new_str
+end
+
+--- M.escape
+--- @param s string
+--- @param old string
+--- @param new string
+--- @return string
+function M.replace(s, old, new)
+  local v = string.gsub(s, M.escape(old), new:gsub("%%", "%%%%"))
+  return v
+end
+
 return M

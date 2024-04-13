@@ -6,7 +6,7 @@ local M = {}
 --- M.get_relative_buf_dir returns relative dir path of buffer
 --- eg: {workspace}/path/to/dir_of_buffer
 function M.get_relative_buf_dir()
-  local relative_filepath = string.gsub(vim.api.nvim_buf_get_name(0), vim.loop.cwd(), "")
+  local relative_filepath = string_utils.replace(vim.api.nvim_buf_get_name(0), vim.loop.cwd(), "")
   local chunks = string_utils.split(relative_filepath, "/")
   chunks[vim.fn.len(chunks)] = ""
   return table_utils.join(chunks, "/")
@@ -17,7 +17,7 @@ M.get_cur_buf_dir = M.get_relative_buf_dir
 --- M.get_relative_buf_file returns relative file path of buffer
 --- eg: {workspace}/path/to/file_of_buffer
 function M.get_relative_buf_file()
-  local relative_filepath = string.gsub(vim.api.nvim_buf_get_name(0), vim.loop.cwd(), "")
+  local relative_filepath = string_utils.replace(vim.api.nvim_buf_get_name(0), vim.loop.cwd(), "")
   return "." .. relative_filepath
 end
 
