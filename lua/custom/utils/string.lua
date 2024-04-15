@@ -69,7 +69,7 @@ end
 --- @param new string
 --- @return string
 function M.replace(s, old, new)
-  local v = string.gsub(s, M.escape(old), new:gsub("%%", "%%%%"))
+  local v = string.gsub(s, M.escape(old), new)
   return v
 end
 
