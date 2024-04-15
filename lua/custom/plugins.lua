@@ -183,6 +183,9 @@ local plugins = {
           char = {
             enabled = false,
           },
+          search = {
+            enabled = false,
+          },
         },
       }
     end,
