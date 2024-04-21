@@ -78,6 +78,13 @@ function M.get_ext(filename)
   return chunks[length]
 end
 
+--- M.get_root_name returns root dirname of your project
+function M.get_root_name()
+  local root_abs_path = vim.loop.cwd()
+  local chunks = vim.fn.split(root_abs_path, "/")
+  return chunks[vim.fn.len(chunks)]
+end
+
 local function test_functions()
   print("get_cur_buf_dir:", vim.inspect(M.get_cur_buf_dir()))
   print("get_cur_buf_file:", vim.inspect(M.get_cur_buf_file()))
