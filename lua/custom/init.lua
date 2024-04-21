@@ -33,6 +33,7 @@ autocmd FileType go command! GoRunUnitTest lua require("custom.configs.run-anyth
 autocmd FileType python command! PyRun lua require("custom.configs.run-anything").run_current_script_for_py()
 
 command! UncolorAllWords lua require("interestingwords").UncolorAllWords()
+command! UploadFile lua require("custom.configs.upload-server").upload_server()
 ]]
 
 if vim.g.neovide then

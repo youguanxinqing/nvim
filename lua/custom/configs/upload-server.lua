@@ -8,9 +8,9 @@ local M = {}
 -- local upload_configs = {
 --   {
 --      name = "your project root name"
---      target_root_dir = "project root name on remote server"
+--      target_root_dir = "project root name on remote server"  -- note: must endswith '/'
 --      servers = {
---        {name = "alias name", host = "1.1.1."}
+--        {name = "alias name", host = "1.1.1.1:8080"}
 --      }
 --   }
 -- }
@@ -18,10 +18,9 @@ local M = {}
 local configs = {
   {
     name = "nvim",
-    target_root_dir = "~/.config/nvim/",
+    target_root_dir = "/tmp/test/",
     servers = {
-      { name = "arch1", host = "1.1.1.1" },
-      { name = "arch2", host = "2.2.2.2" },
+      { name = "mine", host = "127.0.0.1:9091" },
     },
   },
 }
@@ -83,12 +82,39 @@ local function decode_line(line)
   }
 end
 
-local function run_upload(target)
-  -- TODO imcomplete upload action
-  print(target.idx, target.name, target.host)
+local function run_upload(target, config)
+  -- command format: sync-client --addr [remote_host]:[remote_port] \
+  --               --local-file-path [local_file_path] \
+  --               --remote-file-path [remote_file_path]
+  -- print(target.idx, target.name, target.host)
+
+  local local_file_path = buf_utils.get_abs_buf_file()
+  local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
+  local output = vim.fn.system {
+    "sync-client",
+    "--addr",
+    target.host,
+    "--local-file-path",
+    local_file_path,
+    "--remote-file-path",
+    remote_file_path,
+  }
+  vim.notify(output)
+end
+
+local function validate_executable_bin()
+  local bin_name = "sync-client"
+  if 1 ~= vim.fn.executable(bin_name) then
+    vim.notify("Missing executable binary file: " .. bin_name, vim.log.levels.ERROR)
+    return -1
+  end
 end
 
 function M.upload_server()
+  if -1 == validate_executable_bin() then
+    return
+  end
+
   local config = get_config()
   if config == nil then
     return
@@ -100,12 +126,10 @@ function M.upload_server()
   end
 
   show_menu(lines, function(item)
-    run_upload(decode_line(item.text))
+    run_upload(decode_line(item.text), config)
   end, function()
     vim.notify "Cancel upload"
   end)
 end
-
-M.upload_server()
 
 return M

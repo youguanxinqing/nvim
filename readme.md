@@ -15,3 +15,15 @@ Use [NvChad](https://github.com/NvChad/NvChad) and change it.
 ```bash
 git clone git@github.com:youguanxinqing/NVChadForMe.git ~/.config/nvim && nvim
 ```
+
+# Dependencies
+
+## Mine
+
+Under command line mode, `UploadFile` can upload your file to specified remote server. It needs `sync-client` on your local OS and `sync-server` on your remote OS. See: https://github.com/youguanxinqing/sync-file
+
+## Community
+
+`ripgrep`: https://github.com/BurntSushi/ripgrep
+
+`fd`: https://github.com/sharkdp/fd
