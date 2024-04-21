@@ -177,6 +177,18 @@ local plugins = {
   {
     "folke/flash.nvim",
     event = "VeryLazy",
+    config = function()
+      require("flash").setup {
+        modes = {
+          char = {
+            enabled = false,
+          },
+          search = {
+            enabled = false,
+          },
+        },
+      }
+    end,
     keys = {
       {
         "<leader>s",
