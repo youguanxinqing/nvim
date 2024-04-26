@@ -272,9 +272,12 @@ local plugins = {
 
   {
     "MunifTanjim/nui.nvim",
+    lazy = true,
   },
   {
     "rcarriga/nvim-notify",
+    event = "VeryLazy",
+    lazy = true,
   },
 }
 
