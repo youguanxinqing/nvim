@@ -1,5 +1,19 @@
 local Menu = require "nui.menu"
 local buf_utils = require "custom.utils.buf"
+local notify = require "notify"
+notify.setup {
+  max_width = function()
+    return 80
+  end,
+  render = "wrapped-compact",
+  timeout = 3000,
+}
+
+local function wrapper_notify(msg, level)
+  notify(msg, level, {
+    title = "Upload Server",
+  })
+end
 
 local M = {}
 
@@ -42,8 +56,8 @@ local function show_menu(lines, on_submit, on_close)
   Menu({
     position = "50%",
     size = {
-      width = 25,
-      height = 5,
+      width = 30,
+      height = 10,
     },
     border = {
       style = "single",
@@ -99,13 +113,13 @@ local function run_upload(target, config)
     "--remote-file-path",
     remote_file_path,
   }
-  vim.notify(output)
+  wrapper_notify(output, vim.log.levels.INFO)
 end
 
 local function validate_executable_bin()
   local bin_name = "sync-client"
   if 1 ~= vim.fn.executable(bin_name) then
-    vim.notify("Missing executable binary file: " .. bin_name, vim.log.levels.ERROR)
+    wrapper_notify("Missing executable binary file: " .. bin_name, vim.log.levels.ERROR)
     return -1
   end
 end
@@ -128,7 +142,7 @@ function M.upload_server()
   show_menu(lines, function(item)
     run_upload(decode_line(item.text), config)
   end, function()
-    vim.notify "Cancel upload"
+    wrapper_notify("Cancel upload", vim.log.levels.WARN)
   end)
 end
 
