@@ -28,6 +28,9 @@ function M.toggle_todo_list()
   vim.api.nvim_command "copen"
   vim.fn.setqflist(qf_list)
   vim.fn.setqflist({}, "r", { title = "TODO" })
+
+  vim.fn.setreg("/", "todo")
+  vim.cmd "set hls"
 end
 
 return M
