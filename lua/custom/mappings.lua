@@ -28,6 +28,14 @@ M.general = {
       end,
       "search in current directory",
     },
+
+    -- toggle todo list
+    ["<Leader>tt"] = {
+      function()
+        require("custom.configs.todo-list").toggle_todo_list()
+      end,
+      "toggle todo list",
+    },
   },
 
   i = {
