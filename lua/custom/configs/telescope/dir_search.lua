@@ -36,4 +36,40 @@ function M.search_in_cur_dir(opts)
     :find()
 end
 
+function M.search_in_listed_buffers(opts)
+  opts = opts or {}
+
+  local listed_buffers = vim.tbl_filter(function(bufno)
+    local info = vim.fn.getbufinfo(bufno)[1]
+    if info.listed ~= 1 then
+      return false
+    end
+    return true
+  end, vim.api.nvim_list_bufs())
+
+  local search_files = vim.tbl_map(function(bufno)
+    return vim.api.nvim_buf_get_name(bufno)
+  end, listed_buffers)
+
+  local vimgrep_arguments = opts.vimgrep_arguments or conf.vimgrep_arguments
+  local args = flatten { vimgrep_arguments }
+
+  local live_grepper = finders.new_job(function(prompt)
+    if not prompt then
+      prompt = ""
+    end
+
+    return flatten { args, "--", prompt, search_files }
+  end, opts.entry_maker or make_entry.gen_from_vimgrep(opts), opts.max_results, opts.cwd)
+
+  pickers
+    .new(opts, {
+      prompt_title = "Search In Listed Buffers",
+      finder = live_grepper,
+      previewer = conf.grep_previewer(opts),
+      sorter = sorters.highlighter_only(opts),
+    })
+    :find()
+end
+
 return M

@@ -29,6 +29,12 @@ M.general = {
       end,
       "search in current directory",
     },
+    ["<Leader>sb"] = {
+      function()
+        require("custom.configs.telescope.dir_search").search_in_listed_buffers()
+      end,
+      "search in listed buffers",
+    },
 
     ["<A-x>"] = { ":", "enter command line mode" },
   },
