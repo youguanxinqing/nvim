@@ -2,7 +2,7 @@
   "extendconf": {
     "prefix": "unit-test",
     "body": [
-      "func TestNAME(t *testing.T) {",
+      "func Test$NAME(t *testing.T) {",
 	    " for idx, c := range []struct {",
 	    " }{",
 		  "   {},",
