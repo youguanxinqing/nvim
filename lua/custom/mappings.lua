@@ -29,6 +29,8 @@ M.general = {
       end,
       "search in current directory",
     },
+
+    ["<A-x>"] = { ":", "enter command line mode" },
   },
 
   i = {
