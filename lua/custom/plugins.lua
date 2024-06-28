@@ -191,7 +191,7 @@ local plugins = {
     end,
     keys = {
       {
-        "<leader>s",
+        "<C-s>",
         mode = { "n" },
         function()
           require("flash").jump()
