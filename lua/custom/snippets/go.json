@@ -1,0 +1,17 @@
+{
+  "extendconf": {
+    "prefix": "unit-test",
+    "body": [
+      "func TestNAME(t *testing.T) {",
+	    " for idx, c := range []struct {",
+	    " }{",
+		  "   {},",
+	    " } {",
+      "",
+	    "   // TODO assert",
+	    " }",
+      "}"
+    ],
+    "description": "gen unit test code"
+  }
+}

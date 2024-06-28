@@ -6,7 +6,13 @@
 				"language": [
 					"go"
 				],
-				"path": "./go_for_artemis.json"
+				"path": "./go_for_as.json"
+			},
+			{
+				"language": [
+					"go"
+				],
+				"path": "./go.json"
 			},
 			{
 				"language": [
