@@ -34,6 +34,8 @@ autocmd FileType python command! PyRun lua require("custom.configs.run-anything"
 
 command! UncolorAllWords lua require("interestingwords").UncolorAllWords()
 command! UploadFile lua require("custom.configs.upload-server").upload_server()
+
+command! GitHistory Telescope git_bcommits
 ]]
 
 if vim.g.neovide then
