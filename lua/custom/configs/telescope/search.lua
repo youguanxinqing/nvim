@@ -10,8 +10,8 @@ local flatten = vim.tbl_flatten
 
 local M = {}
 
--- M.search_in_cur_dir search words in current directory
-function M.search_in_cur_dir(opts)
+-- M.search_in_current_dir search words in current directory
+function M.search_in_current_dir(opts)
   opts = opts or {}
 
   local search_dirs = { buf_utils.get_cur_buf_dir() }
@@ -28,7 +28,7 @@ function M.search_in_cur_dir(opts)
 
   pickers
     .new(opts, {
-      prompt_title = "Search in -> " .. buf_utils.get_cur_buf_dir(),
+      prompt_title = "Search In -> " .. buf_utils.get_cur_buf_dir(),
       finder = live_grepper,
       previewer = conf.grep_previewer(opts),
       sorter = sorters.highlighter_only(opts),
@@ -68,6 +68,56 @@ function M.search_in_listed_buffers(opts)
       finder = live_grepper,
       previewer = conf.grep_previewer(opts),
       sorter = sorters.highlighter_only(opts),
+    })
+    :find()
+end
+
+function M.search_in_current_buffer(opts)
+  opts = opts or {}
+
+  local search_files = { buf_utils.get_abs_buf_file() }
+
+  local vimgrep_arguments = opts.vimgrep_arguments or conf.vimgrep_arguments
+  local args = flatten { vimgrep_arguments }
+
+  local live_grepper = finders.new_job(function(prompt)
+    if not prompt then
+      prompt = ""
+    end
+
+    return flatten { args, "--", prompt, search_files }
+  end, opts.entry_maker or make_entry.gen_from_vimgrep(opts), opts.max_results, opts.cwd)
+
+  pickers
+    .new(opts, {
+      prompt_title = "Search In Current Buffer",
+      finder = live_grepper,
+      previewer = conf.grep_previewer(opts),
+      sorter = sorters.highlighter_only(opts),
+    })
+    :find()
+end
+
+function M.find_files_from_here(opts)
+  opts = opts or {}
+
+  local files_from_here = { buf_utils.get_cur_buf_dir() }
+
+  local live_grepper = finders.new_job(function(prompt)
+    if not prompt then
+      prompt = ""
+    end
+
+    return flatten { { "rg", "--files", "--color", "never" }, "--", prompt, files_from_here }
+  end, opts.entry_maker or make_entry.gen_from_file(opts), opts.max_results, opts.cwd)
+
+  pickers
+    .new(opts, {
+      prompt_title = "Find Files From Here",
+      __locations_input = true,
+      finder = live_grepper,
+      previewer = conf.grep_previewer(opts),
+      sorter = conf.file_sorter(opts),
     })
     :find()
 end

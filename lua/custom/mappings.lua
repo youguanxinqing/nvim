@@ -25,15 +25,27 @@ M.general = {
     -- search
     ["<Leader>fd"] = {
       function()
-        require("custom.configs.telescope.dir_search").search_in_cur_dir()
+        require("custom.configs.telescope.search").search_in_current_dir()
       end,
       "search in current directory",
     },
     ["<Leader>sb"] = {
       function()
-        require("custom.configs.telescope.dir_search").search_in_listed_buffers()
+        require("custom.configs.telescope.search").search_in_listed_buffers()
       end,
       "search in listed buffers",
+    },
+    ["<leader>ss"] = {
+      function()
+        require("custom.configs.telescope.search").search_in_current_buffer()
+      end,
+      "search in current buffer",
+    },
+    ["<leader><Space>"] = {
+      function()
+        require("custom.configs.telescope.search").find_files_from_here()
+      end,
+      "find files from here",
     },
 
     ["<A-x>"] = { ":", "enter command line mode" },
