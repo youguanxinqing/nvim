@@ -49,6 +49,15 @@ M.general = {
     },
 
     ["<A-x>"] = { ":", "enter command line mode" },
+
+    -- toggle todo list
+    ["<Leader>tt"] = {
+      function()
+        require("custom.configs.todo-list").toggle_todo_list()
+      end,
+      "toggle todo list",
+    },
+
   },
 
   i = {
