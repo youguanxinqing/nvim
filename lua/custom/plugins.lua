@@ -164,7 +164,7 @@ local plugins = {
     keys = { "<leader>k" },
     config = function()
       require("interestingwords").setup {
-        colors = { "#aeee00", "#ff0000", "#C4B0FF", "#FFABAB", "#FFEF82", "#62CDFF" },
+        colors = { "#aeee00", "#ff0000", "#C4B0FF", "#FFABAB", "#FFEF82", "#62CDFF", "#3CB371", "#FF1493" },
         search_count = true,
         navigation = true,
         -- search_key = "<leader>m",
