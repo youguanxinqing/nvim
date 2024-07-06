@@ -9,7 +9,12 @@ function M.get_relative_buf_dir()
   local relative_filepath = string_utils.replace(vim.api.nvim_buf_get_name(0), vim.loop.cwd(), "")
   local chunks = string_utils.split(relative_filepath, "/")
   chunks[vim.fn.len(chunks)] = ""
-  return table_utils.join(chunks, "/")
+
+  local dir = table_utils.join(chunks, "/")
+  if dir == "" then
+    return "."
+  end
+  return dir
 end
 
 M.get_cur_buf_dir = M.get_relative_buf_dir
