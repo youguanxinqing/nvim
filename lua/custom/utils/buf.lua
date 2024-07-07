@@ -83,6 +83,16 @@ function M.get_ext(filename)
   return chunks[length]
 end
 
+function M.get_tail_name(abs_path)
+  local chunks = string_utils.split(abs_path, "/")
+  local length = vim.fn.len(chunks)
+  if length == 0 then
+    return ""
+  end
+
+  return chunks[length]
+end
+
 --- M.get_root_name returns root dirname of your project
 function M.get_root_name()
   local root_abs_path = vim.loop.cwd()

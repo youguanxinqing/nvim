@@ -58,6 +58,19 @@ M.general = {
       "toggle todo list",
     },
 
+    -- windows
+    ["<Leader>we"] = {
+      function()
+        require("custom.configs.window").enlarge()
+      end,
+      "enlarge current window",
+    },
+    ["<Leader>ww"] = {
+      function()
+        require("custom.configs.window").swith_buffers()
+      end,
+      "swith window",
+    },
   },
 
   i = {
