@@ -32,6 +32,42 @@ function M.enlarge()
   local is_left = true
 
   local all_infos = get_all_wins_info()
+  if vim.fn.len(all_infos) ~= 2 then
+    return
+  end
+
+  for _, win_info in ipairs(all_infos) do
+    -- print(vim.inspect(win_info))
+    if win_info.is_cur_win then
+      is_left = false
+    elseif is_left then
+      table.insert(left, win_info)
+    else
+      table.insert(right, win_info)
+    end
+  end
+
+  local width = 10
+  -- open other buffers to left one by one
+  for _, win_info in ipairs(vim.fn.reverse(left)) do
+    vim.api.nvim_win_set_width(win_info.win_id, width)
+  end
+
+  -- open other buffers to right one by one
+  for _, win_info in ipairs(vim.fn.reverse(right)) do
+    vim.api.nvim_win_set_width(win_info.win_id, width)
+  end
+end
+
+function M.normalize()
+  local left, right = {}, {}
+  local is_left = true
+
+  local all_infos = get_all_wins_info()
+  if vim.fn.len(all_infos) ~= 2 then
+    return
+  end
+
   for _, win_info in ipairs(all_infos) do
     -- print(vim.inspect(win_info))
     if win_info.is_cur_win then
@@ -44,39 +80,23 @@ function M.enlarge()
   end
 
   -- open other buffers to left one by one
-  local width = 10
   for _, win_info in ipairs(vim.fn.reverse(left)) do
-    vim.api.nvim_win_set_width(win_info.win_id, width)
-    vim.api.nvim_win_set_config(win_info.win_id, {
+    vim.api.nvim_win_close(win_info.win_id, false)
+    vim.api.nvim_open_win(win_info.buf_id, false, {
       split = "left",
+      vertical = true,
     })
-    -- vim.api.nvim_win_close(win_info.win_id, false)
-    -- vim.api.nvim_open_win(win_info.buf_id, false, {
-    --   vertical = true,
-    --   split = "left",
-    --   width = width,
-    -- })
   end
 
   -- open other buffers to right one by one
-  width = 10
   for _, win_info in ipairs(vim.fn.reverse(right)) do
-    vim.api.nvim_win_set_width(win_info.win_id, width)
-    vim.api.nvim_win_set_config(win_info.win_id, {
+    vim.api.nvim_win_close(win_info.win_id, false)
+    vim.api.nvim_open_win(win_info.buf_id, false, {
       split = "right",
+      vertical = true,
     })
-    -- vim.api.nvim_win_close(win_info.win_id, false)
-    -- vim.api.nvim_open_win(win_info.buf_id, false, {
-    --   vertical = true,
-    --   split = "right",
-    --   width = width,
-    -- })
-
-    width = width + 10
   end
 end
-
-M.enlarge()
 
 function M.swith_buffers()
   local all_win_infos = get_all_wins_info()

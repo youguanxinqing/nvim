@@ -63,13 +63,19 @@ M.general = {
       function()
         require("custom.configs.window").enlarge()
       end,
-      "enlarge current window",
+      "Enlarge current window",
     },
     ["<Leader>ww"] = {
       function()
         require("custom.configs.window").swith_buffers()
       end,
-      "swith window",
+      "Swith window",
+    },
+    ["<Leader>wn"] = {
+      function()
+        require("custom.configs.window").normalize()
+      end,
+      "Normalize window size",
     },
   },
 
