@@ -59,15 +59,15 @@ M.general = {
     },
 
     -- windows
-    ["<Leader>we"] = {
+    ["<Leader>wo"] = {
       function()
-        require("custom.configs.window").enlarge()
+        require("custom.configs.window").enlargen()
       end,
       "Enlarge current window",
     },
     ["<Leader>ww"] = {
       function()
-        require("custom.configs.window").swith_buffers()
+        require("custom.configs.window").swap_windows()
       end,
       "Swith window",
     },

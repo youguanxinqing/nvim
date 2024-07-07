@@ -27,7 +27,7 @@ local function get_all_wins_info()
   return infos
 end
 
-function M.enlarge()
+function M.enlargen()
   local left, right = {}, {}
   local is_left = true
 
@@ -98,7 +98,7 @@ function M.normalize()
   end
 end
 
-function M.swith_buffers()
+function M.swap_windows()
   local all_win_infos = get_all_wins_info()
   if vim.fn.len(all_win_infos) ~= 2 then
     return
