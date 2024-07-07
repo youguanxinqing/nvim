@@ -10,7 +10,7 @@ local function get_all_wins_info()
     local buf_id = vim.api.nvim_win_get_buf(win_id)
     local buf_name = vim.api.nvim_buf_get_name(buf_id)
 
-    local is_need = not vim.startswith(buf_name, "NvimTree")
+    local is_need = not vim.startswith(buf_utils.get_tail_name(buf_name), "NvimTree")
 
     if is_need then
       local win_config = vim.api.nvim_win_get_config(win_id)
