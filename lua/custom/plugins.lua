@@ -250,6 +250,16 @@ local plugins = {
     },
   },
   {
+    "Iron-E/nvim-highlite",
+    config = function(_, opts)
+      require("highlite").setup()
+      vim.api.nvim_command "colorscheme highlite-everforest"
+    end,
+    lazy = false,
+    priority = math.huge,
+    -- version = "^4.0.0",
+  },
+  {
     "princejoogie/dir-telescope.nvim",
     dependencies = {
       "nvim-telescope/telescope.nvim",
