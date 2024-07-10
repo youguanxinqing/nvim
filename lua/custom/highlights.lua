@@ -5,21 +5,9 @@
 local M = {}
 
 ---@type Base46HLGroupsList
-M.override = {
-  -- Normal = {
-  --   bg = { "black", 0 },
-  -- },
-  Comment = {
-    italic = true,
-  },
-  ["@comment"] = {
-    fg = "#AFEEEE",
-  },
-}
+M.override = {}
 
 ---@type HLTable
-M.add = {
-  NvimTreeOpenedFolderName = { fg = "green", bold = true },
-}
+M.add = {}
 
 return M

@@ -6,7 +6,7 @@ local M = {}
 M.base_30 = {
   white = "#D3C6AA",
   darker_black = "#272f35",
-  black = "#2b3339", --  nvim bg
+  black = "#2C323B", --  nvim bg
   black2 = "#323a40",
   one_bg = "#363e44",
   one_bg2 = "#363e44",
@@ -37,7 +37,7 @@ M.base_30 = {
 }
 
 M.base_16 = {
-  base00 = "#2b3339",
+  base00 = "#2C323B",
   base01 = "#323c41",
   base02 = "#3a4248",
   base03 = "#424a50",
@@ -60,6 +60,11 @@ M.type = "dark"
 M.polish_hl = {
   ["@tag"] = { fg = M.base_30.orange },
   ["@tag.delimiter"] = { fg = M.base_30.green },
+  ["@comment"] = {
+    fg = "#AFEEEE",
+    italic = true,
+  },
+  ["CursorLine"] = { bg = "#242a32" },
 }
 
 M = require("base46").override_theme(M, "everforest-guan")
