@@ -4,6 +4,12 @@ local overrides = require "custom.configs.overrides"
 local plugins = {
 
   -- Override plugin definition options
+  {
+    "NvChad/base46",
+    config = function(_, opts)
+      require "custom.themes.everforest-guan"
+    end,
+  },
 
   {
     "neovim/nvim-lspconfig",
@@ -225,14 +231,14 @@ local plugins = {
   -- 		require("custom.configs.lsp-inlayhints").setup(opts)
   -- 	end,
   -- },
-  {
-    "theniceboy/nvim-deus",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      vim.cmd [[colorscheme deus]]
-    end,
-  },
+  -- {
+  --   "theniceboy/nvim-deus",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd [[colorscheme deus]]
+  --   end,
+  -- },
   {
     "youguanxinqing/smartcolumn.nvim",
     event = "VeryLazy",
