@@ -61,7 +61,7 @@ M.polish_hl = {
   ["@tag"] = { fg = M.base_30.orange },
   ["@tag.delimiter"] = { fg = M.base_30.green },
   ["@comment"] = {
-    fg = "#AFEEEE",
+    fg = "#808000",
     italic = true,
   },
   ["CursorLine"] = { bg = "#242a32" },
