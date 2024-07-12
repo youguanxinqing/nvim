@@ -5,8 +5,8 @@ local M = {}
 
 M.base_30 = {
   white = "#D3C6AA",
-  darker_black = "#272f35",
-  black = "#2C323B", --  nvim bg
+  darker_black = "#1e2326",
+  black = "#232a2e", --  nvim bg
   black2 = "#323a40",
   one_bg = "#363e44",
   one_bg2 = "#363e44",
@@ -37,7 +37,7 @@ M.base_30 = {
 }
 
 M.base_16 = {
-  base00 = "#2C323B",
+  base00 = "#232a2e",
   base01 = "#323c41",
   base02 = "#3a4248",
   base03 = "#424a50",
@@ -64,8 +64,15 @@ M.polish_hl = {
     fg = "#808000",
     italic = true,
   },
-  ["CursorLine"] = { bg = "#242a32" },
+  ["CursorLine"] = { bg = "#2d353b" },
+  ["ColorColumn"] = { bg = "#2d353b" },
+  ["Visual"] = { bg = "#543a48" },
+  ["WinSeparator"] = { fg = "#555555" },
+  -- ["NvimTreeWinSeparator"] = { fg = "#555555" },
+  -- ["QuickFixLine"] = { bg = 0 },
 }
+
+vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", { ctermbg = 0, fg = "#bbbbbb" })
 
 M = require("base46").override_theme(M, "everforest-guan")
 
