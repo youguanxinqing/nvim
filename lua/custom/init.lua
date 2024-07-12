@@ -31,12 +31,23 @@ autocmd FileType go command! GoGenEnumToString lua require("custom.configs.gen-g
 autocmd FileType go command! GoRunUnitTest lua require("custom.configs.run-anything").run_unit_test_for_go()
 
 autocmd FileType python command! PyRun lua require("custom.configs.run-anything").run_current_script_for_py()
-
-command! UncolorAllWords lua require("interestingwords").UncolorAllWords()
-command! UploadFile lua require("custom.configs.upload-server").upload_server()
-
-command! GitHistory Telescope git_bcommits
 ]]
+
+-- vim.cmd command!
+vim.api.nvim_create_user_command(
+  "UncolorAllWords",
+  'lua require("interestingwords").UncolorAllWords()',
+  { bang = true }
+)
+vim.api.nvim_create_user_command(
+  "UploadFile",
+  'lua require("custom.configs.upload-server").upload_server()',
+  { bang = true }
+)
+vim.api.nvim_create_user_command("GitHistory", "Telescope git_bcommits", { bang = true })
+vim.api.nvim_create_user_command("GitBlame", "Gitsigns blame", { bang = true })
+vim.api.nvim_create_user_command("GitToggleLineBlame", "Gitsigns toggle_current_line_blame", { bang = true })
+vim.api.nvim_create_user_command("GitDiffThis", "Gitsigns diffthis", { bang = true })
 
 if vim.g.neovide then
   require "custom.neovide"

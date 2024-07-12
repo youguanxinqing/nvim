@@ -68,8 +68,9 @@ M.polish_hl = {
   ["ColorColumn"] = { bg = "#2d353b" },
   ["Visual"] = { bg = "#543a48" },
   ["WinSeparator"] = { fg = "#555555" },
-  -- ["NvimTreeWinSeparator"] = { fg = "#555555" },
-  -- ["QuickFixLine"] = { bg = 0 },
+
+  ["DiffAdd"] = { bg = "#414b50" },
+  ["DiffDelete"] = { bg = "#543a48" },
 }
 
 vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", { ctermbg = 0, fg = "#bbbbbb" })
