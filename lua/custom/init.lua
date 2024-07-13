@@ -66,6 +66,11 @@ vim.api.nvim_create_autocmd("FileType", {
       'lua require("custom.configs.run-anything").run_unit_test_for_go()',
       { bang = true }
     )
+    vim.api.nvim_create_user_command(
+      "GoRunPackageTests",
+      'lua require("custom.configs.run-anything").run_file_tests_for_go()',
+      { bang = true }
+    )
   end,
 })
 
