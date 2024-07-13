@@ -8,7 +8,7 @@ local buf_utils = require "custom.utils.buf"
 local string_uitils = require "custom.utils.string"
 local table_uitils = require "custom.utils.table"
 
-local flatten = vim.tbl_flatten
+local flatten = table_uitils.flatten
 
 local M = {}
 

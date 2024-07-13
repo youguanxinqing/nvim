@@ -69,4 +69,11 @@ end
 -- print(M.join({ 1, 2, 3, 4 }, ","))
 -- print(M.join({ 1 }, ","))
 
+--- M.flatten
+--- @param arr table
+--- @return table
+function M.flatten(arr)
+  return vim.iter(arr):flatten(10):totable()
+end
+
 return M
