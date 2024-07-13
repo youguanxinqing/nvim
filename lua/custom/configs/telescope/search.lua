@@ -5,6 +5,8 @@ local conf = require("telescope.config").values
 local sorters = require "telescope.sorters"
 
 local buf_utils = require "custom.utils.buf"
+local string_uitils = require "custom.utils.string"
+local table_uitils = require "custom.utils.table"
 
 local flatten = vim.tbl_flatten
 
@@ -101,14 +103,34 @@ end
 function M.find_files_from_here(opts)
   opts = opts or {}
 
-  local files_from_here = { buf_utils.get_cur_buf_dir() }
+  local files_from_here = buf_utils.get_cur_buf_dir()
 
   local live_grepper = finders.new_job(function(prompt)
-    if not prompt then
-      prompt = ""
+    prompt = vim.fn.trim(prompt)
+
+    local dir = nil
+    if string.match(prompt, "%s+") ~= nil then
+      local chunks = string_uitils.splitn(prompt, " ", 2)
+      if vim.fn.len(chunks) >= 2 then
+        dir, prompt = vim.fn.trim(chunks[1]), vim.fn.trim(chunks[2])
+      else
+        dir, prompt = prompt, ""
+      end
+    else
+      dir, prompt = prompt, ""
     end
 
-    return flatten { { "rg", "--files", "--color", "never" }, "--", prompt, files_from_here }
+    local is_dir = vim.fn.isdirectory(dir)
+    if is_dir == 0 then
+      local chunks = string_uitils.split(dir, "/")
+      prompt = chunks[vim.fn.len(chunks)]
+      chunks[vim.fn.len(chunks)] = ""
+      dir = table_uitils.join(chunks, "/")
+    end
+
+    local notice = string.format("dir:%s,prompt:%s", dir, prompt)
+    print(notice)
+    return flatten { { "rg", "--files", "--color", "never" }, "--", prompt, dir }
   end, opts.entry_maker or make_entry.gen_from_file(opts), opts.max_results, opts.cwd)
 
   pickers
@@ -118,6 +140,7 @@ function M.find_files_from_here(opts)
       finder = live_grepper,
       previewer = conf.grep_previewer(opts),
       sorter = conf.file_sorter(opts),
+      default_text = files_from_here,
     })
     :find()
 end
