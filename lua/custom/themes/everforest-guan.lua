@@ -71,6 +71,7 @@ M.polish_hl = {
 
   ["DiffAdd"] = { bg = "#414b50" },
   ["DiffDelete"] = { bg = "#543a48" },
+  ["Search"] = { bg = "#fabd3f", fg = "#3c3836" },
 }
 
 vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", { ctermbg = 0, fg = "#bbbbbb" })
