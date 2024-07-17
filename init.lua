@@ -19,3 +19,10 @@ end
 dofile(vim.g.base46_cache .. "defaults")
 vim.opt.rtp:prepend(lazypath)
 require "plugins"
+
+-- load private config
+local nvim_private = vim.fn.expand "~" .. "/.config/nvim.private"
+if vim.fn.isdirectory(nvim_private) == 1 then
+  vim.opt.rtp:append(nvim_private)
+  require "private"
+end
