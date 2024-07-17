@@ -1,5 +1,7 @@
-local Menu = require "nui.menu"
 local buf_utils = require "custom.utils.buf"
+local table_utils = require "custom.utils.table"
+
+local Menu = require "nui.menu"
 local notify = require "notify"
 notify.setup {
   max_width = function()
@@ -21,8 +23,8 @@ local M = {}
 -- example:
 -- local upload_configs = {
 --   {
---      name = "your project root name"
---      target_root_dir = "project root name on remote server"  -- note: must endswith '/'
+--      name = "your project root name",
+--      target_root_dir = "project root name on remote server",  -- note: must endswith '/'
 --      servers = {
 --        {name = "alias name", host = "1.1.1.1:8080"}
 --      }
@@ -104,16 +106,38 @@ local function run_upload(target, config)
 
   local local_file_path = buf_utils.get_abs_buf_file()
   local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
-  local output = vim.fn.system {
-    "sync-client",
-    "--addr",
+  local cmd = string.format(
+    "sync-client --addr %s --local-file-path %s --remote-file-path %s",
     target.host,
-    "--local-file-path",
     local_file_path,
-    "--remote-file-path",
-    remote_file_path,
-  }
-  wrapper_notify(output, vim.log.levels.INFO)
+    remote_file_path
+  )
+
+  local out_list, err_list = {}, {}
+  local job_id = vim.fn.jobstart(cmd, {
+    on_stdout = function(_, data)
+      for _, line in ipairs(data) do
+        if line ~= "" then
+          table.insert(out_list, line)
+        end
+      end
+    end,
+    on_stderr = function(_, data)
+      for _, line in ipairs(data) do
+        if line ~= "" then
+          table.insert(err_list, line)
+        end
+      end
+    end,
+  })
+  vim.fn.jobwait { job_id }
+
+  local text = table_utils.join(table_utils.flatten { out_list, err_list }, "\n")
+  if vim.fn.len(err_list) == 0 then
+    wrapper_notify(text, vim.log.levels.INFO)
+  else
+    wrapper_notify(text, vim.log.levels.ERROR)
+  end
 end
 
 local function validate_executable_bin()
@@ -144,6 +168,12 @@ function M.upload_server()
   end, function()
     wrapper_notify("Cancel upload", vim.log.levels.WARN)
   end)
+end
+
+-- M.set_server_configs
+-- @param server_configs table
+function M.set_server_configs(server_configs)
+  configs = server_configs
 end
 
 return M
