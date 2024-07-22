@@ -22,6 +22,10 @@ function M.with_pyenv(cmd)
   end
   local py_with_pyenv = vim.fn.expand(default_configs.pyenv_path .. version .. "/bin/python")
 
+  if type(cmd) == "string" then
+    cmd = vim.fn.split(cmd, " ", true)
+  end
+
   local new_cmd = {}
   for _, item in ipairs(cmd) do
     if string.match(item, "^python") then
