@@ -5,9 +5,16 @@ local default_configs = {
   version_file = ".python-version",
 }
 
+local function convert_type(typ, value)
+  if typ == "string" then
+    return vim.fn.join(value, " ")
+  end
+  return value
+end
+
 --- M.with_pyenv
---- @param cmd table
---- @return table
+--- @param cmd table|string
+--- @return table|string
 function M.with_pyenv(cmd)
   local root_dir = vim.loop.cwd()
   local file = root_dir .. "/" .. default_configs.version_file
@@ -22,7 +29,8 @@ function M.with_pyenv(cmd)
   end
   local py_with_pyenv = vim.fn.expand(default_configs.pyenv_path .. version .. "/bin/python")
 
-  if type(cmd) == "string" then
+  local typ = type(cmd)
+  if typ == "string" then
     cmd = vim.fn.split(cmd, " ", true)
   end
 
@@ -35,7 +43,7 @@ function M.with_pyenv(cmd)
     end
   end
 
-  return new_cmd
+  return convert_type(typ, new_cmd)
 end
 
 return M
