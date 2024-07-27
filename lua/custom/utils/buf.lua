@@ -100,6 +100,26 @@ function M.get_root_name()
   return chunks[vim.fn.len(chunks)]
 end
 
+--- M.listed_bufs like `:ls`. return buf id.
+function M.listed_bufs()
+  return vim.tbl_filter(function(bufno)
+    local info = vim.fn.getbufinfo(bufno)[1]
+    if info.listed ~= 1 then
+      return false
+    end
+    return true
+  end, vim.api.nvim_list_bufs())
+end
+
+--- M.listed_buf_infos
+function M.listed_buf_infos()
+  local infos = {}
+  for _, buf_id in ipairs(M.listed_bufs()) do
+    table.insert(infos, vim.fn.getbufinfo(buf_id)[1])
+  end
+  return infos
+end
+
 local function test_functions()
   print("get_cur_buf_dir:", vim.inspect(M.get_cur_buf_dir()))
   print("get_cur_buf_file:", vim.inspect(M.get_cur_buf_file()))
