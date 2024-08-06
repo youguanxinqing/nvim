@@ -61,6 +61,7 @@ function M.run_unit_test_for_lua()
   end
 
   local cmd = string.format('lua dofile("%s").%s()', buf_utils.get_abs_buf_file(), unit_name)
+  print("-- " .. cmd)
   vim.cmd(cmd)
 end
 
