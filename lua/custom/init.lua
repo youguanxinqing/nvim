@@ -73,6 +73,16 @@ vim.api.nvim_create_autocmd("FileType", {
     )
   end,
 })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "lua" },
+  callback = function()
+    vim.api.nvim_create_user_command(
+      "LuaRunUnitTest",
+      'lua require("custom.configs.run-anything").run_unit_test_for_lua()',
+      { bang = true }
+    )
+  end,
+})
 
 if vim.g.neovide then
   require "custom.neovide"

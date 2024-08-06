@@ -51,4 +51,17 @@ function M.run_current_script_for_py()
   terminal.send(cmd, "float")
 end
 
+--- M.run_unit_test_for_lua run unit test
+function M.run_unit_test_for_lua()
+  local cur_line = vim.api.nvim_get_current_line()
+  local unit_name = string.match(cur_line, "(Test[a-zA-Z0-9]+)")
+  if unit_name == nil then
+    error(string.format("invalid test unit name in golang: '%s'", cur_line))
+    return
+  end
+
+  local cmd = string.format('lua dofile("%s").%s()', buf_utils.get_abs_buf_file(), unit_name)
+  vim.cmd(cmd)
+end
+
 return M
