@@ -5,12 +5,31 @@ local table_utils = require "custom.utils.table"
 
 local M = {}
 
+local function get_start_chunk_line(is_start_line)
+  local pos = vim.api.nvim_win_get_cursor(0)
+  local lnum = pos[1]
+
+  for line_no = lnum, 1, -1 do
+    local line = vim.fn.getline(line_no)
+    if is_start_line(line) then
+      return line
+    end
+  end
+
+  return ""
+end
+
 --- M.run_unit_test_for_go run unit test
 function M.run_unit_test_for_go()
-  local cur_line = vim.api.nvim_get_current_line()
-  local unit_name = string.match(cur_line, "(Test[a-zA-Z0-9]+)")
+  local line = get_start_chunk_line(function(line)
+    if string.match(line, "^func") then
+      return true
+    end
+  end)
+
+  local unit_name = string.match(line, "(Test[a-zA-Z0-9_]+)")
   if unit_name == nil then
-    error(string.format("invalid test unit name in golang: '%s'", cur_line))
+    error(string.format("invalid test unit name in golang: '%s'", line))
     return
   end
 
@@ -25,7 +44,7 @@ function M.run_file_tests_for_go()
 
   local unit_names = {}
   for _, line in ipairs(lines) do
-    local unit_name = string.match(line, "func (Test[a-zA-Z0-9]+)")
+    local unit_name = string.match(line, "func (Test[a-zA-Z0-9_]+)")
     if unit_name ~= nil then
       table.insert(unit_names, unit_name)
     end
@@ -53,14 +72,25 @@ end
 
 --- M.run_unit_test_for_lua run unit test
 function M.run_unit_test_for_lua()
-  local cur_line = vim.api.nvim_get_current_line()
-  local unit_name = string.match(cur_line, "(Test[a-zA-Z0-9]+)")
+  local line = get_start_chunk_line(function(line)
+    if string.match(line, "^function") then
+      return true
+    end
+  end)
+
+  if line == "" then
+    error(string.format "not found test unit function for lua")
+    return
+  end
+
+  local unit_name = string.match(line, "([Tt]?est[a-zA-Z0-9_]+)")
   if unit_name == nil then
-    error(string.format("invalid test unit name in golang: '%s'", cur_line))
+    error(string.format("invalid test unit name in golang: '%s'", line))
     return
   end
 
   local cmd = string.format('lua dofile("%s").%s()', buf_utils.get_abs_buf_file(), unit_name)
+  print("-- UnitTestName: " .. unit_name)
   print("-- " .. cmd)
   vim.cmd(cmd)
 end
