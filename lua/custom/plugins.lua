@@ -6,6 +6,7 @@ local plugins = {
   -- Override plugin definition options
   {
     "NvChad/base46",
+    lazy = true,
     config = function(_, opts)
       require "custom.themes.everforest-guan"
     end,
@@ -13,6 +14,7 @@ local plugins = {
 
   {
     "neovim/nvim-lspconfig",
+    lazy = true,
     dependencies = {
       -- format & linting
       {
@@ -31,26 +33,31 @@ local plugins = {
   -- override plugin configs
   {
     "williamboman/mason.nvim",
+    lazy = true,
     opts = overrides.mason,
   },
 
   {
     "nvim-treesitter/nvim-treesitter",
+    lazy = true,
     opts = overrides.treesitter,
   },
 
   {
     "nvim-tree/nvim-tree.lua",
+    lazy = true,
     opts = overrides.nvimtree,
   },
 
   {
     "NvChad/nvterm",
+    event = "VeryLazy",
     opts = overrides.nvterm,
   },
 
   {
     "nvim-telescope/telescope.nvim",
+    lazy = true,
     opts = overrides.telescope,
     config = function(_, opts)
       local telescope = require "telescope"
@@ -65,10 +72,12 @@ local plugins = {
   },
   {
     "folke/which-key.nvim",
+    lazy = true,
     opts = overrides.whichkey,
   },
   {
     "lukas-reineke/indent-blankline.nvim",
+    lazy = true,
     opts = overrides.indent_blankline,
   },
 
@@ -138,6 +147,7 @@ local plugins = {
   },
   {
     "simrat39/symbols-outline.nvim",
+    event = "VeryLazy",
     cmd = "SymbolsOutline",
     config = function()
       require "custom.configs.symbols-outline"
@@ -145,6 +155,7 @@ local plugins = {
   },
   {
     "youguanxinqing/bookmark.nvim",
+    event = "VeryLazy",
     branch = "youguan",
     lazy = false,
     cmd = { "BookmarkToggle", "BookmarkList", "FilemarkToggle", "FilemarkList" },
@@ -167,6 +178,7 @@ local plugins = {
   },
   {
     "Mr-LLLLL/interestingwords.nvim",
+    event = "VeryLazy",
     keys = { "<leader>k" },
     config = function()
       require("interestingwords").setup {
@@ -288,6 +300,7 @@ local plugins = {
 
   {
     "MunifTanjim/nui.nvim",
+    event = "VeryLazy",
     lazy = true,
   },
   {
