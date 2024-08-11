@@ -3,6 +3,7 @@ local buf_utils = require "custom.utils.buf"
 
 local M = {}
 
+--- @return integer (window id)
 function M.display_content_to_window(window_name, title, content, direction)
   local _real_name = string.format("%s/%s", vim.loop.cwd(), window_name)
 
@@ -40,6 +41,8 @@ function M.display_content_to_window(window_name, title, content, direction)
   local lines = { title, "---" }
   tbl_utils.extend(lines, vim.fn.split(content, "\n"))
   vim.api.nvim_buf_set_lines(buf_id, 0, vim.fn.len(lines), false, lines)
+
+  return win_id
 end
 
 return M
