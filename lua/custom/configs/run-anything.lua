@@ -11,12 +11,42 @@ local function get_start_chunk_line(is_start_line)
 
   for line_no = lnum, 1, -1 do
     local line = vim.fn.getline(line_no)
-    if is_start_line(line) then
+    if is_start_line(line, line_no) then
       return line
     end
   end
 
   return ""
+end
+
+function M.get_dashboard_info(name)
+  local dashboard = {}
+  local terminals = vim.fn.filter(vim.api.nvim_list_chans(), function(_, item)
+    return item.mode == "terminal"
+  end)
+  for _, item in ipairs(terminals) do
+    local buffer_name = string.sub(vim.api.nvim_buf_get_name(item.buffer), 0 - string.len(name), -1)
+    if buffer_name == name then
+      dashboard = {
+        buffer_id = item.buffer,
+        chan_id = item.id,
+      }
+    end
+  end
+
+  if dashboard.buffer_id then
+    vim.api.nvim_buf_delete(dashboard.buffer_id, { force = true })
+  end
+  dashboard.buffer_id = vim.api.nvim_create_buf(true, true)
+  vim.api.nvim_buf_set_name(dashboard.buffer_id, name)
+  dashboard.chan_id = vim.api.nvim_open_term(dashboard.buffer_id, {})
+
+  dashboard.win_id = vim.api.nvim_open_win(0, false, {
+    split = "below",
+  })
+  vim.api.nvim_win_set_buf(dashboard.win_id, dashboard.buffer_id)
+
+  return dashboard
 end
 
 --- M.run_unit_test_for_go run unit test
@@ -93,6 +123,53 @@ function M.run_unit_test_for_lua()
   print("-- UnitTestName: " .. unit_name)
   print("-- " .. cmd)
   vim.cmd(cmd)
+end
+
+function M.run_unit_test_for_rust()
+  local line = get_start_chunk_line(function(line, lnum)
+    if string.match(line, "fn test_[a-zA-Z0-9_]+") then
+      return vim.fn.match(vim.fn.getline(lnum - 1), "#%[test%]")
+    end
+  end)
+
+  local unit_name = string.match(line, "(test[a-zA-Z0-9_]+)")
+  if unit_name == nil then
+    error(string.format("invalid test unit name in rust: '%s'", line))
+    return
+  end
+
+  local module_path = ""
+  local buf_name = buf_utils.get_buf_name_without_ext()
+  if buf_name ~= "main" then
+    local dir_path = buf_utils.get_relative_buf_dir()
+    dir_path = vim.fn.filter(vim.fn.split(dir_path, "/"), function(_, chunk)
+      if chunk == "" or chunk == "." or chunk == "src" then
+        return false
+      end
+      return true
+    end)
+    table_utils.extend(dir_path, { buf_utils.get_buf_name_without_ext(), "" })
+    module_path = vim.fn.join(dir_path, "::")
+  end
+
+  local path_to_unit_name = module_path .. "tests::" .. unit_name
+  local cmd = { "cargo", "test", "--", "--exact", path_to_unit_name, "--show-output" }
+
+  local out_list = {}
+  local job_id = vim.fn.jobstart(cmd, {
+    on_stdout = function(_, data)
+      for _, _line in ipairs(data) do
+        if _line ~= "" then
+          table.insert(out_list, _line)
+        end
+      end
+    end,
+  })
+
+  local info = M.get_dashboard_info "Unit-Test-Dashboard"
+  vim.fn.jobwait { job_id }
+  vim.api.nvim_chan_send(info.chan_id, vim.fn.join(cmd, " ") .. "\n" .. vim.fn.join(out_list, "\n"))
+  vim.api.nvim_set_current_win(info.win_id)
 end
 
 return M

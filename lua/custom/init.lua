@@ -62,7 +62,7 @@ vim.api.nvim_create_autocmd("FileType", {
       { bang = true }
     )
     vim.api.nvim_create_user_command(
-      "GoRunUnitTest",
+      "RunUnitTest",
       'lua require("custom.configs.run-anything").run_unit_test_for_go()',
       { bang = true }
     )
@@ -77,8 +77,18 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "lua" },
   callback = function()
     vim.api.nvim_create_user_command(
-      "LuaRunUnitTest",
+      "RunUnitTest",
       'lua require("custom.configs.run-anything").run_unit_test_for_lua()',
+      { bang = true }
+    )
+  end,
+})
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "rust" },
+  callback = function()
+    vim.api.nvim_create_user_command(
+      "RunUnitTest",
+      'lua require("custom.configs.run-anything").run_unit_test_for_rust()',
       { bang = true }
     )
   end,
