@@ -2,6 +2,7 @@ local terminal = require "nvterm.terminal"
 
 local buf_utils = require "custom.utils.buf"
 local table_utils = require "custom.utils.table"
+local win_utils = require "custom.utils.win"
 
 local M = {}
 
@@ -166,10 +167,13 @@ function M.run_unit_test_for_rust()
     end,
   })
 
-  local info = M.get_dashboard_info "Unit-Test-Dashboard"
   vim.fn.jobwait { job_id }
-  vim.api.nvim_chan_send(info.chan_id, vim.fn.join(cmd, " ") .. "\n" .. vim.fn.join(out_list, "\n"))
-  vim.api.nvim_set_current_win(info.win_id)
+  win_utils.display_content_to_window(
+    "Unit-Test-Dashboard",
+    vim.fn.join(cmd, " "),
+    vim.fn.join(out_list, "\n"),
+    "below"
+  )
 end
 
 return M

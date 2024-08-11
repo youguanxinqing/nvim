@@ -1,9 +1,9 @@
-local tbl_utils = require "lua.custom.utils.table"
-local buf_utils = require "lua.custom.utils.buf"
+local tbl_utils = require "custom.utils.table"
+local buf_utils = require "custom.utils.buf"
 
 local M = {}
 
-function M.display_content_to_window(window_name, title, content)
+function M.display_content_to_window(window_name, title, content, direction)
   local _real_name = string.format("%s/%s", vim.loop.cwd(), window_name)
 
   local listed_bufs = buf_utils.listed_buf_infos()
@@ -21,8 +21,11 @@ function M.display_content_to_window(window_name, title, content)
 
   -- if it does not open, create a new window
   if win_id == nil then
+    if not direction then
+      direction = "right"
+    end
     win_id = vim.api.nvim_open_win(0, false, {
-      split = "right",
+      split = direction,
     })
   end
 
