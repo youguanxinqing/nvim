@@ -155,25 +155,8 @@ function M.run_unit_test_for_rust()
 
   local path_to_unit_name = module_path .. "tests::" .. unit_name
   local cmd = { "cargo", "test", "--", "--exact", path_to_unit_name, "--show-output" }
-
-  local out_list = {}
-  local job_id = vim.fn.jobstart(cmd, {
-    on_stdout = function(_, data)
-      for _, _line in ipairs(data) do
-        if _line ~= "" then
-          table.insert(out_list, _line)
-        end
-      end
-    end,
-  })
-
-  vim.fn.jobwait { job_id }
-  win_utils.display_content_to_window(
-    "Unit-Test-Dashboard",
-    vim.fn.join(cmd, " "),
-    vim.fn.join(out_list, "\n"),
-    "below"
-  )
+  terminal.toggle "float"
+  terminal.send(table.concat(cmd, " ", 1, #cmd), "float")
 end
 
 return M
