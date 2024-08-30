@@ -118,9 +118,9 @@ local function create_file_or_dir()
   -- create directory if endswith '/' character
   -- otherwise create file
   if string.sub(path, -1) == "/" then
-    vim.system { "mkdir", "-p", path }
+    require("custom.utils.file").recursive_create_directory(path)
   else
-    vim.system { "touch", path }
+    require("custom.utils.file").recursive_create_file(path)
   end
 
   print "create ok!"
