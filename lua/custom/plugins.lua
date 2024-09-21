@@ -180,16 +180,20 @@ local plugins = {
     "Mr-LLLLL/interestingwords.nvim",
     event = "VeryLazy",
     keys = { "<leader>k" },
+    cmd = { "UncolorAllWords" },
     config = function()
       require("interestingwords").setup {
         colors = { "#aeee00", "#ff0000", "#C4B0FF", "#FFABAB", "#FFEF82", "#62CDFF", "#3CB371", "#FF1493" },
         search_count = true,
         navigation = true,
-        -- search_key = "<leader>m",
-        -- cancel_search_key = "<leader>M",
         color_key = "<leader>k",
         cancel_color_key = "<leader>K",
       }
+      vim.api.nvim_create_user_command(
+        "UncolorAllWords",
+        'lua require("interestingwords").UncolorAllWords()',
+        { bang = true }
+      )
     end,
   },
   {
@@ -219,21 +223,6 @@ local plugins = {
     },
   },
   -- {
-  -- 	"utilyre/barbecue.nvim",
-  -- 	event = "VeryLazy",
-  -- 	name = "barbecue",
-  -- 	version = "*",
-  -- 	dependencies = {
-  -- 		"SmiteshP/nvim-navic",
-  -- 		"nvim-tree/nvim-web-devicons", -- optional dependency
-  -- 	},
-  -- 	config = function()
-  -- 		require("barbecue").setup({
-  -- 			attach_navic = true,
-  -- 		})
-  -- 	end,
-  -- },
-  -- {
   -- 	"lvimuser/lsp-inlayhints.nvim",
   -- 	event = "VeryLazy",
   -- 	opts = function()
@@ -242,14 +231,6 @@ local plugins = {
   -- 	config = function(_, opts)
   -- 		require("custom.configs.lsp-inlayhints").setup(opts)
   -- 	end,
-  -- },
-  -- {
-  --   "theniceboy/nvim-deus",
-  --   lazy = false,
-  --   priority = 1000,
-  --   config = function()
-  --     vim.cmd [[colorscheme deus]]
-  --   end,
   -- },
   {
     "youguanxinqing/smartcolumn.nvim",
@@ -261,16 +242,6 @@ local plugins = {
       scope = "file",
     },
   },
-  -- {
-  --   "Iron-E/nvim-highlite",
-  --   config = function(_, opts)
-  --     require("highlite").setup()
-  --     vim.api.nvim_command "colorscheme highlite-everforest"
-  --   end,
-  --   lazy = false,
-  --   priority = math.huge,
-  --   -- version = "^4.0.0",
-  -- },
   {
     "princejoogie/dir-telescope.nvim",
     dependencies = {
@@ -297,7 +268,6 @@ local plugins = {
       }
     end,
   },
-
   {
     "MunifTanjim/nui.nvim",
     event = "VeryLazy",
@@ -307,6 +277,27 @@ local plugins = {
     "rcarriga/nvim-notify",
     event = "VeryLazy",
     lazy = true,
+  },
+  {
+    "youguanxinqing/git-conflicts.nvim",
+    event = "VeryLazy",
+    lazy = true,
+    cmd = {
+      "GitConflictsHighlight",
+      "GitConflictsHighlightUN",
+    },
+    config = function()
+      vim.api.nvim_create_user_command(
+        "GitConflictsHighlight",
+        'lua require("git-conflicts").highlight_conflicts()',
+        { bang = true }
+      )
+      vim.api.nvim_create_user_command(
+        "GitConflictsHighlightUN",
+        'lua require("git-conflicts").clear_highlights()',
+        { bang = true }
+      )
+    end,
   },
 }
 

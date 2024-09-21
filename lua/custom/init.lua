@@ -28,11 +28,6 @@ vim.g.vscode_snippets_path = "./lua/custom/snippets"
 
 -- vim.cmd command!
 vim.api.nvim_create_user_command(
-  "UncolorAllWords",
-  'lua require("interestingwords").UncolorAllWords()',
-  { bang = true }
-)
-vim.api.nvim_create_user_command(
   "UploadFile",
   'lua require("custom.configs.upload-server").upload_server()',
   { bang = true }
