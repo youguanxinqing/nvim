@@ -9,6 +9,7 @@ M.treesitter = {
     "go",
     "python",
     "rust",
+    "vimdoc",
   },
   indent = {
     -- enable = false,
