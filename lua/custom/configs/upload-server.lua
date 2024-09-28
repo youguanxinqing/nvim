@@ -107,7 +107,7 @@ local function run_upload(target, config)
   local local_file_path = buf_utils.get_abs_buf_file()
   local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
   local cmd = string.format(
-    "sync-client --addr %s --local-file-path %s --remote-file-path %s",
+    "sync-client --addr %s --local-file-path %s --remote-file-path %s --enable-insecure-ssl",
     target.host,
     local_file_path,
     remote_file_path
