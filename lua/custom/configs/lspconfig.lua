@@ -48,9 +48,17 @@ lspconfig.lua_ls.setup {
   },
 }
 
+local function on_attach_for_rust(client, bufnr)
+  on_attach(client, bufnr)
+
+  if vim.lsp.inlay_hint then
+    vim.lsp.inlay_hint.enable(true, { 0 })
+  end
+end
+
 lspconfig.rust_analyzer.setup {
   on_init = on_init,
-  on_attach = on_attach,
+  on_attach = on_attach_for_rust,
   capabilities = capabilities,
   filetypes = { "rust" },
   root = lspconfig.util.root_pattern "Cargo.toml",
