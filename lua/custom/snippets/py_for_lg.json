@@ -9,7 +9,6 @@
   "Dataclass Create Method": {
     "prefix": "create-method-of-dataclass",
     "body": [
-      "\n",
       "@classmethod",
       "def create(cls, **kwargs) -> \"$CLASS_NAME\":",
       "    from dataclasses import fields, MISSING",
@@ -26,5 +25,16 @@
       "    return cls(**new_kwargs)"
       ],
     "description": "generate create method of dataclass"
+  },
+  "Dataclass To Json Method": {
+    "prefix": "to-json-method-of-dataclass",
+    "body": [
+      "def to_json(self) -> str:",
+      "    import json",
+      "    from dataclasses import asdict",
+      "",
+      "    return json.dumps(asdict(self))"
+      ],
+    "description": "generate to_json method of dataclass"
   }
 }
