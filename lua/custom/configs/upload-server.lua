@@ -41,6 +41,8 @@ local configs = {
   },
 }
 
+local default_upload_filename = ".upload_specified_files.txt"
+
 local function get_config()
   local root_name = buf_utils.get_root_name()
   for _, one_config in ipairs(configs) do
@@ -168,6 +170,94 @@ function M.upload_server()
   end, function()
     wrapper_notify("Cancel upload", vim.log.levels.WARN)
   end)
+end
+
+local function run_upload_for_many_files(files, target, config)
+  -- command format: sync-client --addr [remote_host]:[remote_port] \
+  --               ----file-mappings local_path1:remote_path1,local_path2:remote_path2,...
+  local project_root_dir = vim.loop.cwd()
+
+  local mappings = {}
+  for _, file in ipairs(files) do
+    table.insert(mappings, string.format("%s/%s:%s%s", project_root_dir, file, config.target_root_dir, file))
+  end
+
+  -- local cmd = string.format(
+  --   "sync-client --addr %s --file-mappings %s --enable-insecure-ssl",
+  --   target.host,
+  --   table.concat(mappings, ",")
+  -- )
+  local cmd = string.format("sync-client --addr %s --file-mappings %s", target.host, table.concat(mappings, ","))
+  print("cmd: " .. cmd)
+
+  local out_list, err_list = {}, {}
+  local job_id = vim.fn.jobstart(cmd, {
+    on_stdout = function(_, data)
+      for _, line in ipairs(data) do
+        if line ~= "" then
+          table.insert(out_list, line)
+        end
+      end
+    end,
+    on_stderr = function(_, data)
+      for _, line in ipairs(data) do
+        if line ~= "" then
+          table.insert(err_list, line)
+        end
+      end
+    end,
+  })
+  vim.fn.jobwait { job_id }
+
+  local text = table_utils.join(table_utils.flatten { out_list, err_list }, "\n")
+  if vim.fn.len(err_list) == 0 then
+    wrapper_notify(text, vim.log.levels.INFO)
+  else
+    wrapper_notify(text, vim.log.levels.ERROR)
+  end
+end
+
+function M.upload_files_changed()
+  print "upload_files_changed"
+end
+
+-- M.upload_files_specified
+-- upload specified files where are writed in ${default_upload_filenam}`
+-- in project directory
+function M.upload_files_specified()
+  if -1 == validate_executable_bin() then
+    return
+  end
+
+  local config = get_config()
+  if config == nil then
+    return
+  end
+
+  local server_lines = {}
+  for idx, server in ipairs(config.servers) do
+    table.insert(server_lines, Menu.item(encode_line(idx, server)))
+  end
+
+  local upload_server_file = vim.loop.cwd() .. "/" .. default_upload_filename
+  if vim.fn.filereadable(upload_server_file) == 0 then
+    wrapper_notify(string.format("%s is not existed!", default_upload_filename), vim.log.levels.WARN)
+    return
+  end
+
+  local upload_file_lines = vim.fn.readfile(upload_server_file)
+  if vim.fn.len(upload_file_lines) == 0 then
+    wrapper_notify(string.format("%s is empty!", default_upload_filename), vim.log.levels.WARN)
+    return
+  end
+
+  show_menu(server_lines, function(item)
+    run_upload_for_many_files(upload_file_lines, decode_line(item.text), config)
+  end, function()
+    wrapper_notify("Cancel upload", vim.log.levels.WARN)
+  end)
+
+  print "upload_files_specified"
 end
 
 -- M.set_server_configs

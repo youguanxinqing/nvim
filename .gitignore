@@ -4,3 +4,4 @@ syntax
 coc-settings.json
 .luarc.json
 after
+.upload_specified_files.txt

@@ -32,6 +32,16 @@ vim.api.nvim_create_user_command(
   'lua require("custom.configs.upload-server").upload_server()',
   { bang = true }
 )
+vim.api.nvim_create_user_command(
+  "UploadFilesChanged",
+  'lua require("custom.configs.upload-server").upload_files_changed()',
+  { bang = true }
+)
+vim.api.nvim_create_user_command(
+  "UploadFilesSpecified",
+  'lua require("custom.configs.upload-server").upload_files_specified()',
+  { bang = true }
+)
 vim.api.nvim_create_user_command("GitHistory", "Telescope git_bcommits", { bang = true })
 vim.api.nvim_create_user_command("GitBlame", "Gitsigns blame", { bang = true })
 vim.api.nvim_create_user_command("GitToggleLineBlame", "Gitsigns toggle_current_line_blame", { bang = true })
