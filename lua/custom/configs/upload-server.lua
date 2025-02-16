@@ -218,7 +218,34 @@ local function run_upload_for_many_files(files, target, config)
 end
 
 function M.upload_files_changed()
-  print "upload_files_changed"
+  if -1 == validate_executable_bin() then
+    return
+  end
+
+  local config = get_config()
+  if config == nil then
+    return
+  end
+
+  local server_lines = {}
+  for idx, server in ipairs(config.servers) do
+    table.insert(server_lines, Menu.item(encode_line(idx, server)))
+  end
+
+  -- get all modified files
+  local changed_files = vim.fn.systemlist { "git", "ls-files", "-m" }
+  local staged_files = vim.fn.systemlist { "git", "diff", "--staged", "--name-only" }
+  table_utils.extend(changed_files, staged_files)
+  if vim.fn.len(changed_files) == 0 then
+    wrapper_notify("NO changed file!", vim.log.levels.WARN)
+    return
+  end
+
+  show_menu(server_lines, function(item)
+    run_upload_for_many_files(changed_files, decode_line(item.text), config)
+  end, function()
+    wrapper_notify("Cancel upload", vim.log.levels.WARN)
+  end)
 end
 
 -- M.upload_files_specified
@@ -256,8 +283,6 @@ function M.upload_files_specified()
   end, function()
     wrapper_notify("Cancel upload", vim.log.levels.WARN)
   end)
-
-  print "upload_files_specified"
 end
 
 -- M.set_server_configs
