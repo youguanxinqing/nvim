@@ -182,13 +182,11 @@ local function run_upload_for_many_files(files, target, config)
     table.insert(mappings, string.format("%s/%s:%s%s", project_root_dir, file, config.target_root_dir, file))
   end
 
-  -- local cmd = string.format(
-  --   "sync-client --addr %s --file-mappings %s --enable-insecure-ssl",
-  --   target.host,
-  --   table.concat(mappings, ",")
-  -- )
-  local cmd = string.format("sync-client --addr %s --file-mappings %s", target.host, table.concat(mappings, ","))
-  print("cmd: " .. cmd)
+  local cmd = string.format(
+    "sync-client --addr %s --file-mappings %s --enable-insecure-ssl",
+    target.host,
+    table.concat(mappings, ",")
+  )
 
   local out_list, err_list = {}, {}
   local job_id = vim.fn.jobstart(cmd, {
