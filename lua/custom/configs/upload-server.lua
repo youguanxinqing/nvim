@@ -24,9 +24,10 @@ local M = {}
 -- local upload_configs = {
 --   {
 --      name = "your project root name",
+--      enable_ssl = false,
 --      target_root_dir = "project root name on remote server",  -- note: must endswith '/'
 --      servers = {
---        {name = "alias name", host = "1.1.1.1:8080"}
+--        {name = "alias name", addr = "1.1.1.1:8080", host = ""}
 --      }
 --   }
 -- }
@@ -34,9 +35,11 @@ local M = {}
 local configs = {
   {
     name = "nvim",
+    enable_ssl = false,
     target_root_dir = "/tmp/test/",
     servers = {
-      { name = "mine", host = "127.0.0.1:9091" },
+      { name = "mine1", addr = "127.0.0.1:9091" },
+      { name = "mine2", addr = "127.0.0.1:9091", host = "xxx.com" },
     },
   },
 }
@@ -54,6 +57,14 @@ local function get_config()
   local msg = string.format("Not find name='%s', pls add configuration for '%s' firstly!", root_name, root_name)
   vim.notify(msg, vim.log.levels.ERROR)
   return nil
+end
+
+local function find_server(name, config)
+  for _, item in ipairs(config.servers) do
+    if name == item.name then
+      return item
+    end
+  end
 end
 
 local function show_menu(lines, on_submit, on_close)
@@ -88,7 +99,7 @@ local function show_menu(lines, on_submit, on_close)
 end
 
 local function encode_line(idx, server)
-  return string.format("%s. %s -> %s", idx, server.name, server.host)
+  return string.format("%s. %s -> %s", idx, server.name, server.addr)
 end
 
 local function decode_line(line)
@@ -96,23 +107,44 @@ local function decode_line(line)
   return {
     idx = string.gsub(chunks[1], "[.]", ""),
     name = chunks[2],
-    host = chunks[4],
+    addr = chunks[4],
   }
+end
+
+local function make_ssl_chunk(config)
+  local ssl_chunk = ""
+  if config.enable_ssl == true then
+    ssl_chunk = "--enable-insecure-ssl"
+  end
+  return ssl_chunk
+end
+
+local function make_host_chunk(target, config)
+  local host_chunk = ""
+
+  local one_server = find_server(target.name, config)
+  if one_server.host ~= nil and one_server.host ~= "" then
+    host_chunk = string.format("--host %s", one_server.host)
+  end
+  return host_chunk
 end
 
 local function run_upload(target, config)
   -- command format: sync-client --addr [remote_host]:[remote_port] \
   --               --local-file-path [local_file_path] \
   --               --remote-file-path [remote_file_path]
-  -- print(target.idx, target.name, target.host)
+  --               --host xxx.com
+  -- print(target.idx, target.name, target.addr)
 
   local local_file_path = buf_utils.get_abs_buf_file()
   local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
   local cmd = string.format(
-    "sync-client --addr %s --local-file-path %s --remote-file-path %s --enable-insecure-ssl",
-    target.host,
+    "sync-client --addr %s %s --local-file-path %s --remote-file-path %s %s",
+    target.addr,
+    make_host_chunk(target, config),
     local_file_path,
-    remote_file_path
+    remote_file_path,
+    make_ssl_chunk(config)
   )
 
   local out_list, err_list = {}, {}
@@ -174,7 +206,8 @@ end
 
 local function run_upload_for_many_files(files, target, config)
   -- command format: sync-client --addr [remote_host]:[remote_port] \
-  --               ----file-mappings local_path1:remote_path1,local_path2:remote_path2,...
+  --               --host xxx.com \
+  --               --file-mappings local_path1:remote_path1,local_path2:remote_path2,...
   local project_root_dir = vim.loop.cwd()
 
   local mappings = {}
@@ -183,9 +216,11 @@ local function run_upload_for_many_files(files, target, config)
   end
 
   local cmd = string.format(
-    "sync-client --addr %s --file-mappings %s --enable-insecure-ssl",
-    target.host,
-    table.concat(mappings, ",")
+    "sync-client --addr %s %s --file-mappings %s %s",
+    target.addr,
+    make_host_chunk(target, config),
+    table.concat(mappings, ","),
+    make_ssl_chunk(config)
   )
 
   local out_list, err_list = {}, {}
