@@ -59,14 +59,6 @@ local function get_config()
   return nil
 end
 
-local function find_server(name, config)
-  for _, item in ipairs(config.servers) do
-    if name == item.name then
-      return item
-    end
-  end
-end
-
 local function show_menu(lines, on_submit, on_close)
   Menu({
     position = "50%",
@@ -108,9 +100,10 @@ end
 
 local function decode_line(line)
   local chunks = vim.fn.split(line, " ")
+  local idx = string.gsub(chunks[1], "[.]", "")
   return {
-    idx = string.gsub(chunks[1], "[.]", ""),
-    name = chunks[2],
+    idx = tonumber(idx),
+    display_name = chunks[2],
   }
 end
 
@@ -125,11 +118,15 @@ end
 local function make_host_chunk(target, config)
   local host_chunk = ""
 
-  local one_server = find_server(target.name, config)
+  local one_server = config.servers[target.idx]
   if one_server.host ~= nil and one_server.host ~= "" then
     host_chunk = string.format("--host %s", one_server.host)
   end
   return host_chunk
+end
+
+local function make_addr_chunk(target, config)
+  return config.servers[target.idx].addr
 end
 
 local function run_upload(target, config)
@@ -137,13 +134,13 @@ local function run_upload(target, config)
   --               --local-file-path [local_file_path] \
   --               --remote-file-path [remote_file_path]
   --               --host xxx.com
-  -- print(target.idx, target.name)
+  -- print(target.idx, target.display_name)
 
   local local_file_path = buf_utils.get_abs_buf_file()
   local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
   local cmd = string.format(
     "sync-client --addr %s %s --local-file-path %s --remote-file-path %s %s",
-    target.addr,
+    make_addr_chunk(target, config),
     make_host_chunk(target, config),
     local_file_path,
     remote_file_path,
@@ -220,7 +217,7 @@ local function run_upload_for_many_files(files, target, config)
 
   local cmd = string.format(
     "sync-client --addr %s %s --file-mappings %s %s",
-    target.addr,
+    make_addr_chunk(target, config),
     make_host_chunk(target, config),
     table.concat(mappings, ","),
     make_ssl_chunk(config)
