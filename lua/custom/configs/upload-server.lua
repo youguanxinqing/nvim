@@ -99,6 +99,10 @@ local function show_menu(lines, on_submit, on_close)
 end
 
 local function encode_line(idx, server)
+  -- using host if it exists, otherwise using addr
+  if server.host ~= nil and server.host ~= "" then
+    return string.format("%s. %s -> %s", idx, server.name, server.host)
+  end
   return string.format("%s. %s -> %s", idx, server.name, server.addr)
 end
 
@@ -107,7 +111,6 @@ local function decode_line(line)
   return {
     idx = string.gsub(chunks[1], "[.]", ""),
     name = chunks[2],
-    addr = chunks[4],
   }
 end
 
@@ -134,7 +137,7 @@ local function run_upload(target, config)
   --               --local-file-path [local_file_path] \
   --               --remote-file-path [remote_file_path]
   --               --host xxx.com
-  -- print(target.idx, target.name, target.addr)
+  -- print(target.idx, target.name)
 
   local local_file_path = buf_utils.get_abs_buf_file()
   local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
