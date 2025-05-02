@@ -137,9 +137,6 @@ local plugins = {
   },
   {
     "rmagatti/auto-session",
-    dependencies = {
-      "zwhitchcox/auto-session-nvim-tree",
-    },
     lazy = false,
     config = function()
       require "custom.configs.auto-session"

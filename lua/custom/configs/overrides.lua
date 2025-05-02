@@ -90,7 +90,7 @@ M.telescope = {
 }
 
 M.whichkey = {
-  window = {
+  win = {
     border = "double",
   },
 }
