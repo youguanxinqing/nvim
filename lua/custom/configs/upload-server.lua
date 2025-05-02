@@ -1,5 +1,6 @@
 local buf_utils = require "custom.utils.buf"
 local table_utils = require "custom.utils.table"
+local win_utils = require "custom.utils.win"
 
 local Menu = require "nui.menu"
 local notify = require "notify"
@@ -316,6 +317,62 @@ function M.upload_files_specified()
   end, function()
     wrapper_notify("Cancel upload", vim.log.levels.WARN)
   end)
+end
+
+local const_diff_window_name = "Diff Remote File"
+
+local function diff_file(target, config)
+  -- command format: sync-client --addr [remote_host]:[remote_port] \
+  --               pull \
+  --               --file-mappings [local_file_path]:[remote_file_path]
+  --               --host xxx.com
+  -- print(target.idx, target.display_name)
+
+  local tmp_local_file_path = "/tmp" .. buf_utils.get_abs_buf_file()
+  local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
+
+  local cmd = string.format(
+    "sync-client --addr %s %s %s pull --file-mappings %s:%s",
+    make_addr_chunk(target, config),
+    make_host_chunk(target, config),
+    make_ssl_chunk(config),
+    tmp_local_file_path,
+    remote_file_path
+  )
+
+  local output = vim.fn.system(cmd)
+  if vim.v.shell_error ~= 0 then
+    wrapper_notify(string.format("%s", output), vim.log.levels.WARN)
+  else
+    win_utils.diff_vsplit_file(const_diff_window_name, remote_file_path)
+  end
+end
+
+-- pM.diff_current_file
+function M.diff_current_file()
+  if -1 == validate_executable_bin() then
+    return
+  end
+
+  local config = get_config()
+  if config == nil then
+    return
+  end
+
+  local lines = {}
+  for idx, server in ipairs(config.servers) do
+    table.insert(lines, Menu.item(encode_line(idx, server)))
+  end
+
+  show_menu(lines, function(item)
+    diff_file(decode_line(item.text), config)
+  end, function()
+    wrapper_notify("Cancel upload", vim.log.levels.WARN)
+  end)
+end
+
+function M.close_diff()
+  win_utils.close_diff_vsplit(const_diff_window_name)
 end
 
 -- M.set_server_configs
