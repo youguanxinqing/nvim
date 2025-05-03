@@ -252,6 +252,12 @@ local default_plugins = {
   -- Only load whichkey after all the gui
   {
     "folke/which-key.nvim",
+    dependencies = {
+      {
+        "echasnovski/mini.nvim",
+        version = "*",
+      },
+    },
     keys = { "<leader>", "<c-r>", '"', "'", "`", "c", "v", "g" },
     init = function()
       require("core.utils").load_mappings "whichkey"
