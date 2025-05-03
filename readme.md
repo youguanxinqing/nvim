@@ -13,12 +13,12 @@ Use [NvChad](https://github.com/NvChad/NvChad) and change it.
 # Install
 
 ```bash
-git clone git@github.com:youguanxinqing/NVChadForMe.git ~/.config/nvim && nvim
+git clone git@github.com:youguanxinqing/nvim.git ~/.config/nvim && nvim
 ```
 
 # Dependencies
 
-## Mine
+## Personal
 
 Under command line mode, `UploadFile` can upload your file to specified remote server. It needs `sync-client` on your local OS and `sync-server` on your remote OS. See: https://github.com/youguanxinqing/sync-file
 
