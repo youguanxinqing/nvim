@@ -348,7 +348,7 @@ local function diff_file(target, config)
   end
 end
 
--- pM.diff_current_file
+-- M.diff_current_file
 function M.diff_current_file()
   if -1 == validate_executable_bin() then
     return
