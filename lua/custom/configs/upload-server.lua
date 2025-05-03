@@ -132,6 +132,7 @@ end
 
 local function run_upload(target, config)
   -- command format: sync-client --addr [remote_host]:[remote_port] \
+  --               push \
   --               --local-file-path [local_file_path] \
   --               --remote-file-path [remote_file_path]
   --               --host xxx.com
@@ -140,38 +141,19 @@ local function run_upload(target, config)
   local local_file_path = buf_utils.get_abs_buf_file()
   local remote_file_path = config.target_root_dir .. buf_utils.get_relative_buf_file()
   local cmd = string.format(
-    "sync-client --addr %s %s --local-file-path %s --remote-file-path %s %s",
+    "sync-client --addr %s %s %s push --local-file-path %s --remote-file-path %s",
     make_addr_chunk(target, config),
     make_host_chunk(target, config),
+    make_ssl_chunk(config),
     local_file_path,
-    remote_file_path,
-    make_ssl_chunk(config)
+    remote_file_path
   )
 
-  local out_list, err_list = {}, {}
-  local job_id = vim.fn.jobstart(cmd, {
-    on_stdout = function(_, data)
-      for _, line in ipairs(data) do
-        if line ~= "" then
-          table.insert(out_list, line)
-        end
-      end
-    end,
-    on_stderr = function(_, data)
-      for _, line in ipairs(data) do
-        if line ~= "" then
-          table.insert(err_list, line)
-        end
-      end
-    end,
-  })
-  vim.fn.jobwait { job_id }
-
-  local text = table_utils.join(table_utils.flatten { out_list, err_list }, "\n")
-  if vim.fn.len(err_list) == 0 then
-    wrapper_notify(text, vim.log.levels.INFO)
+  local output = vim.fn.system(cmd)
+  if vim.v.shell_error == 0 then
+    wrapper_notify(output, vim.log.levels.INFO)
   else
-    wrapper_notify(text, vim.log.levels.ERROR)
+    wrapper_notify(output, vim.log.levels.ERROR)
   end
 end
 
@@ -208,6 +190,7 @@ end
 local function run_upload_for_many_files(files, target, config)
   -- command format: sync-client --addr [remote_host]:[remote_port] \
   --               --host xxx.com \
+  --               push \
   --               --file-mappings local_path1:remote_path1,local_path2:remote_path2,...
   local project_root_dir = vim.loop.cwd()
 
@@ -217,37 +200,18 @@ local function run_upload_for_many_files(files, target, config)
   end
 
   local cmd = string.format(
-    "sync-client --addr %s %s --file-mappings %s %s",
+    "sync-client --addr %s %s %s push --file-mappings %s",
     make_addr_chunk(target, config),
     make_host_chunk(target, config),
-    table.concat(mappings, ","),
-    make_ssl_chunk(config)
+    make_ssl_chunk(config),
+    table.concat(mappings, ",")
   )
 
-  local out_list, err_list = {}, {}
-  local job_id = vim.fn.jobstart(cmd, {
-    on_stdout = function(_, data)
-      for _, line in ipairs(data) do
-        if line ~= "" then
-          table.insert(out_list, line)
-        end
-      end
-    end,
-    on_stderr = function(_, data)
-      for _, line in ipairs(data) do
-        if line ~= "" then
-          table.insert(err_list, line)
-        end
-      end
-    end,
-  })
-  vim.fn.jobwait { job_id }
-
-  local text = table_utils.join(table_utils.flatten { out_list, err_list }, "\n")
-  if vim.fn.len(err_list) == 0 then
-    wrapper_notify(text, vim.log.levels.INFO)
+  local output = vim.fn.system(cmd)
+  if vim.v.shell_error == 0 then
+    wrapper_notify(output, vim.log.levels.INFO)
   else
-    wrapper_notify(text, vim.log.levels.ERROR)
+    wrapper_notify(output, vim.log.levels.ERROR)
   end
 end
 
