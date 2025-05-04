@@ -78,7 +78,7 @@ lspconfig.pyright.setup {
   on_attach = on_attach,
   capabilities = capabilities,
   root_dir = function(fname)
-    local default_config = require("lspconfig.server_configurations.pyright").default_config
+    local default_config = require("lspconfig.configs.pyright").default_config
     return default_config.root_dir(fname) or require("lspconfig.util").find_git_ancestor(fname)
   end,
   filetypes = { "python" },

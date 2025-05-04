@@ -308,7 +308,7 @@ local function diff_file(target, config)
   if vim.v.shell_error ~= 0 then
     wrapper_notify(string.format("%s", output), vim.log.levels.WARN)
   else
-    win_utils.diff_vsplit_file(const_diff_window_name, remote_file_path)
+    win_utils.diff_vsplit_file(const_diff_window_name, tmp_local_file_path)
   end
 end
 
