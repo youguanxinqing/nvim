@@ -71,10 +71,16 @@ function M.close_window_by_name(name)
 end
 
 function M.diff_vsplit_file(window_name, file_path)
+  -- keep current pos before diff
+  local origin_win = vim.api.nvim_get_current_win()
+
   vim.cmd "diffthis"
   vim.cmd("vsplit " .. file_path)
   vim.cmd "diffthis"
   M.rename_window_name(window_name)
+
+  -- restore original win
+  vim.api.nvim_set_current_win(origin_win)
 end
 
 function M.close_diff_vsplit(window_name)
