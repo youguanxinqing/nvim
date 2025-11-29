@@ -13,5 +13,12 @@
       "}"
     ],
     "description": "gen unit test code"
+  },
+  "fmt.Printf for Guan": {
+    "prefix": "guan-fmt",
+    "body": [
+      "fmt.Printf(\"---- guan: %#v\\\\n\", )"
+    ],
+    "description": "quickly log for guan"
   }
 }
