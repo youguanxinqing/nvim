@@ -1,3 +1,5 @@
+local actions = require "telescope.actions"
+
 local M = {}
 
 M.treesitter = {
@@ -85,6 +87,16 @@ M.telescope = {
       prompt = { "─", " ", "─", " ", "╭", "╮", "╯", "╰" },
       results = { "─", "│", "─", "│", " ", "╮", "╯", "╰" },
       preview = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+    },
+    history = {
+      path = "~/.local/share/nvim/databases/telescope_history.sqlite3",
+      limit = 100,
+    },
+    mappings = {
+      i = {
+        ["<Down>"] = actions.cycle_history_next,
+        ["<Up>"] = actions.cycle_history_prev,
+      },
     },
   },
 }
