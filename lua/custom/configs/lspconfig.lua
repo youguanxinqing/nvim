@@ -13,6 +13,36 @@ local on_init = function(client, initialization_result)
   end
 end
 
+-- Function to get pyenv Python path
+local function get_pyenv_python_path()
+  -- Try to get Python path from pyenv
+  local pyenv_python = vim.fn.system "pyenv which python 2>/dev/null"
+  if vim.v.shell_error == 0 and pyenv_python ~= "" then
+    return vim.fn.trim(pyenv_python)
+  end
+
+  -- Fallback to system Python
+  local system_python = vim.fn.exepath "python"
+  if system_python ~= "" then
+    return system_python
+  end
+
+  -- Last resort
+  return "python"
+end
+
+-- Function to get pyenv versions directory
+local function get_pyenv_versions_path()
+  local pyenv_root = vim.fn.expand "~/.pyenv"
+  local versions_path = pyenv_root .. "/versions"
+
+  if vim.fn.isdirectory(versions_path) == 1 then
+    return versions_path
+  end
+
+  return ""
+end
+
 lspconfig.lua_ls.setup {
   on_init = on_init,
   on_attach = on_attach,
@@ -84,12 +114,16 @@ lspconfig.pyright.setup {
   filetypes = { "python" },
   settings = {
     python = {
+      pythonPath = get_pyenv_python_path(),
+      venvPath = get_pyenv_versions_path(),
       analysis = {
         diagnosticMode = "openFilesOnly",
         typeCheckingMode = "basic",
         diagnosticSeverityOverrides = {
           reportGeneralTypeIssues = "none",
         },
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
       },
     },
   },

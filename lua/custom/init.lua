@@ -57,6 +57,25 @@ vim.api.nvim_create_user_command("GitBlame", "Gitsigns blame", { bang = true })
 vim.api.nvim_create_user_command("GitToggleLineBlame", "Gitsigns toggle_current_line_blame", { bang = true })
 vim.api.nvim_create_user_command("GitDiffThis", "Gitsigns diffthis", { bang = true })
 
+-- Find And Replace grug-far
+vim.api.nvim_create_user_command(
+  "FindAndReplace",
+  'lua require("grug-far").toggle_instance({ instanceName="far", staticTitle="Find and Replace" })',
+  { bang = true }
+)
+vim.api.nvim_create_user_command(
+  "FindAndReplaceCword",
+  'lua require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } })',
+  { bang = true }
+)
+vim.api.nvim_create_user_command(
+  "FindAndReplaceFile",
+  'lua require("grug-far").open({ prefills = { paths = vim.fn.expand("%") } })',
+  { bang = true }
+)
+
+vim.api.nvim_create_user_command("TelescopeHistory", 'lua require("telescope.builin").smart_history()', { bang = true })
+
 -- vim.cmd autocmd for command!
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "python" },
