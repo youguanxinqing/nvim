@@ -1,8 +1,6 @@
 local on_attach = require("plugins.configs.lspconfig").on_attach
 local capabilities = require("plugins.configs.lspconfig").capabilities
 
-local lspconfig = require "lspconfig"
-
 -- fix: attempt to index field 'semanticTokensProvider' (a nil value)
 -- refs: https://github.com/neovim/nvim-lspconfig/issues/2542#issuecomment-1547019213
 local on_init = function(client, initialization_result)
@@ -43,11 +41,14 @@ local function get_pyenv_versions_path()
   return ""
 end
 
-lspconfig.lua_ls.setup {
+-- Configure lua_ls using new vim.lsp.config API
+vim.lsp.config("lua_ls", {
+  cmd = { "lua-language-server" },
   on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   filetypes = { "lua" },
+  root_markers = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" },
   settings = {
     Lua = {
       runtime = {
@@ -76,7 +77,10 @@ lspconfig.lua_ls.setup {
       },
     },
   },
-}
+})
+
+-- Enable lua_ls
+vim.lsp.enable("lua_ls")
 
 local function on_attach_for_rust(client, bufnr)
   on_attach(client, bufnr)
@@ -86,31 +90,41 @@ local function on_attach_for_rust(client, bufnr)
   end
 end
 
-lspconfig.rust_analyzer.setup {
+-- Configure rust_analyzer using new vim.lsp.config API
+vim.lsp.config("rust_analyzer", {
+  cmd = { "rust-analyzer" },
   on_init = on_init,
   on_attach = on_attach_for_rust,
   capabilities = capabilities,
   filetypes = { "rust" },
-  root = lspconfig.util.root_pattern "Cargo.toml",
-}
+  root_markers = { "Cargo.toml" },
+})
 
-lspconfig.gopls.setup {
+-- Enable rust_analyzer
+vim.lsp.enable("rust_analyzer")
+
+-- Configure gopls using new vim.lsp.config API
+vim.lsp.config("gopls", {
+  cmd = { "gopls" },
   on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   filetypes = { "go", "gomod", "gowork", "gotmpl" },
-  root = lspconfig.util.root_pattern "go.mod",
+  root_markers = { "go.mod" },
   -- cmd_env = { GOFLAGS = "-tags=tag1,tag2" },
-}
+})
 
-lspconfig.pyright.setup {
+-- Enable gopls
+vim.lsp.enable("gopls")
+
+-- Configure pyright using new vim.lsp.config API
+vim.lsp.config("pyright", {
+  cmd = { "pyright-langserver", "--stdio" },
   on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
-  root_dir = function(fname)
-    local default_config = require("lspconfig.configs.pyright").default_config
-    return default_config.root_dir(fname) or require("lspconfig.util").find_git_ancestor(fname)
-  end,
+  root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", "pyrightconfig.json", ".git" },
+  single_file_support = true,
   filetypes = { "python" },
   settings = {
     python = {
@@ -127,4 +141,7 @@ lspconfig.pyright.setup {
       },
     },
   },
-}
+})
+
+-- Enable pyright
+vim.lsp.enable("pyright")
