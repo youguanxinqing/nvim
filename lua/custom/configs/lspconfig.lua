@@ -163,20 +163,5 @@ vim.lsp.config("pyright", {
 -- Enable pyright
 vim.lsp.enable "pyright"
 
--- Configure copilot using new vim.lsp.config API
-vim.lsp.config("copilot", {
-  cmd = { "copilot-language-server", "--stdio" },
-  filetypes = {
-    "*", -- Support all file types
-  },
-  root_markers = { ".git" },
-  single_file_support = true,
-  settings = {
-    copilot = {
-      enable = true,
-    },
-  },
-})
-
--- Enable copilot
-vim.lsp.enable "copilot"
+-- Copilot is handled by zbirenbaum/copilot.lua plugin, not via LSP
+-- Removed duplicate copilot LSP config to avoid conflicts and improve performance

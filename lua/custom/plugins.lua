@@ -323,15 +323,13 @@ local plugins = {
   },
   {
     "zbirenbaum/copilot.lua",
-    dependencies = {
-      "copilotlsp-nvim/copilot-lsp",
-    },
+    event = "InsertEnter",
     config = function()
       require("copilot").setup {
         suggestion = {
           enabled = true,
           auto_trigger = true,
-          debounce = 75,
+          debounce = 150,
           keymap = {
             accept = "<C-j>",
             dismiss = "<Esc>",
@@ -339,8 +337,6 @@ local plugins = {
         },
       }
     end,
-    event = "VeryLazy",
-    lazy = true,
   },
   {
     "folke/sidekick.nvim",
