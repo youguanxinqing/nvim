@@ -48,7 +48,16 @@ vim.lsp.config("lua_ls", {
   on_attach = on_attach,
   capabilities = capabilities,
   filetypes = { "lua" },
-  root_markers = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" },
+  root_markers = {
+    ".luarc.json",
+    ".luarc.jsonc",
+    ".luacheckrc",
+    ".stylua.toml",
+    "stylua.toml",
+    "selene.toml",
+    "selene.yml",
+    ".git",
+  },
   settings = {
     Lua = {
       runtime = {
@@ -80,7 +89,7 @@ vim.lsp.config("lua_ls", {
 })
 
 -- Enable lua_ls
-vim.lsp.enable("lua_ls")
+vim.lsp.enable "lua_ls"
 
 local function on_attach_for_rust(client, bufnr)
   on_attach(client, bufnr)
@@ -101,7 +110,7 @@ vim.lsp.config("rust_analyzer", {
 })
 
 -- Enable rust_analyzer
-vim.lsp.enable("rust_analyzer")
+vim.lsp.enable "rust_analyzer"
 
 -- Configure gopls using new vim.lsp.config API
 vim.lsp.config("gopls", {
@@ -115,7 +124,7 @@ vim.lsp.config("gopls", {
 })
 
 -- Enable gopls
-vim.lsp.enable("gopls")
+vim.lsp.enable "gopls"
 
 -- Configure pyright using new vim.lsp.config API
 vim.lsp.config("pyright", {
@@ -123,7 +132,15 @@ vim.lsp.config("pyright", {
   on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
-  root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", "pyrightconfig.json", ".git" },
+  root_markers = {
+    "pyproject.toml",
+    "setup.py",
+    "setup.cfg",
+    "requirements.txt",
+    "Pipfile",
+    "pyrightconfig.json",
+    ".git",
+  },
   single_file_support = true,
   filetypes = { "python" },
   settings = {
@@ -144,4 +161,22 @@ vim.lsp.config("pyright", {
 })
 
 -- Enable pyright
-vim.lsp.enable("pyright")
+vim.lsp.enable "pyright"
+
+-- Configure copilot using new vim.lsp.config API
+vim.lsp.config("copilot", {
+  cmd = { "copilot-language-server", "--stdio" },
+  filetypes = {
+    "*", -- Support all file types
+  },
+  root_markers = { ".git" },
+  single_file_support = true,
+  settings = {
+    copilot = {
+      enable = true,
+    },
+  },
+})
+
+-- Enable copilot
+vim.lsp.enable "copilot"

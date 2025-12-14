@@ -322,7 +322,32 @@ local plugins = {
     lazy = true,
   },
   {
+    "zbirenbaum/copilot.lua",
+    dependencies = {
+      "copilotlsp-nvim/copilot-lsp",
+    },
+    config = function()
+      require("copilot").setup {
+        suggestion = {
+          enabled = true,
+          auto_trigger = true,
+          debounce = 75,
+          keymap = {
+            accept = "<C-j>",
+            dismiss = "<Esc>",
+          },
+        },
+      }
+    end,
+    event = "VeryLazy",
+    lazy = true,
+  },
+  {
     "folke/sidekick.nvim",
+    cmd = { "Sidekick" },
+    dependencies = {
+      "folke/snacks.nvim",
+    },
     opts = {
       -- add any options here
       cli = {
@@ -330,6 +355,9 @@ local plugins = {
           backend = "zellij",
           enabled = true,
         },
+      },
+      copilot = {
+        enabled = true,
       },
     },
     keys = {

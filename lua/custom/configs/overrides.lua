@@ -31,6 +31,7 @@ M.mason = {
     "pyright",
     "gopls",
     "rust-analyzer",
+    "copilot-language-server",
   },
 }
 
