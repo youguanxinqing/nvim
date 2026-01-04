@@ -328,7 +328,7 @@ local plugins = {
       require("copilot").setup {
         suggestion = {
           enabled = true,
-          auto_trigger = true,
+          auto_trigger = false,
           debounce = 150,
           keymap = {
             accept = "<C-j>",
@@ -347,13 +347,21 @@ local plugins = {
     opts = {
       -- add any options here
       cli = {
-        mux = {
-          backend = "zellij",
-          enabled = true,
+        -- mux = {
+        --   backend = "zellij",
+        --   enabled = true,
+        -- },
+        win = {
+          keys = {
+            prompt = { "<m-p>", "prompt", mode = "t", desc = "insert prompt or context" },
+          },
         },
       },
       copilot = {
-        enabled = true,
+        enabled = false,
+      },
+      nes = {
+        enabled = false,
       },
     },
     keys = {
@@ -423,7 +431,7 @@ local plugins = {
         desc = "Send Visual Selection",
       },
       {
-        "<leader>ap",
+        "<leader>ai",
         function()
           require("sidekick.cli").prompt()
         end,
