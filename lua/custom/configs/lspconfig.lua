@@ -13,6 +13,29 @@ end
 
 -- Function to get pyenv Python path
 local function get_pyenv_python_path()
+  -- First, check for .venv in current directory or project root
+  local cwd = vim.fn.getcwd()
+  local venv_python = cwd .. "/.venv/bin/python"
+
+  if vim.fn.filereadable(venv_python) == 1 then
+    return venv_python
+  end
+
+  -- Check for common subdirectory patterns (e.g., docling/.venv, backend/.venv)
+  -- Look for pyrightconfig.json to determine venv location
+  local pyright_config = cwd .. "/pyrightconfig.json"
+  if vim.fn.filereadable(pyright_config) == 1 then
+    local config_content = vim.fn.readfile(pyright_config)
+    local config_json = vim.fn.json_decode(table.concat(config_content, "\n"))
+
+    if config_json.venv and config_json.venv ~= "" then
+      local venv_from_config = cwd .. "/" .. config_json.venv .. "/bin/python"
+      if vim.fn.filereadable(venv_from_config) == 1 then
+        return venv_from_config
+      end
+    end
+  end
+
   -- Try to get Python path from pyenv
   local pyenv_python = vim.fn.system "pyenv which python 2>/dev/null"
   if vim.v.shell_error == 0 and pyenv_python ~= "" then
@@ -29,8 +52,15 @@ local function get_pyenv_python_path()
   return "python"
 end
 
--- Function to get pyenv versions directory
+-- Function to get venv path (for pyright to find virtual environments)
 local function get_pyenv_versions_path()
+  -- First check if there's a .venv in current directory
+  local cwd = vim.fn.getcwd()
+  if vim.fn.isdirectory(cwd .. "/.venv") == 1 then
+    return cwd
+  end
+
+  -- Otherwise use pyenv versions directory
   local pyenv_root = vim.fn.expand "~/.pyenv"
   local versions_path = pyenv_root .. "/versions"
 
@@ -133,20 +163,18 @@ vim.lsp.config("pyright", {
   on_attach = on_attach,
   capabilities = capabilities,
   root_markers = {
+    "pyrightconfig.json",
     "pyproject.toml",
     "setup.py",
     "setup.cfg",
     "requirements.txt",
     "Pipfile",
-    "pyrightconfig.json",
     ".git",
   },
   single_file_support = true,
   filetypes = { "python" },
   settings = {
     python = {
-      pythonPath = get_pyenv_python_path(),
-      venvPath = get_pyenv_versions_path(),
       analysis = {
         diagnosticMode = "openFilesOnly",
         typeCheckingMode = "basic",
