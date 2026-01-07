@@ -175,6 +175,8 @@ vim.lsp.config("pyright", {
   filetypes = { "python" },
   settings = {
     python = {
+      pythonPath = get_pyenv_python_path(),
+      venvPath = get_pyenv_versions_path(),
       analysis = {
         diagnosticMode = "openFilesOnly",
         typeCheckingMode = "basic",
