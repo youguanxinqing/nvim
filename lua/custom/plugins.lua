@@ -53,6 +53,10 @@ local plugins = {
     "NvChad/nvterm",
     event = "VeryLazy",
     opts = overrides.nvterm,
+    config = function(_, opts)
+      -- Keep editor highlights, but avoid overriding terminal palette
+      require("nvterm").setup(opts)
+    end,
   },
 
   {
@@ -90,11 +94,33 @@ local plugins = {
     end,
   },
 
-  -- To make a plugin not be loaded
-  -- {
-  --   "NvChad/nvim-colorizer.lua",
-  --   enabled = false
-  -- },
+  -- Colorizer: keep for files, avoid terminals to prevent color blocks
+  {
+    "NvChad/nvim-colorizer.lua",
+    event = "VeryLazy",
+    opts = {},
+    config = function(_, opts)
+      require("colorizer").setup(opts)
+
+      local function detach(buf)
+        pcall(require("colorizer").detach_from_buffer, buf)
+      end
+
+      vim.api.nvim_create_autocmd("TermOpen", {
+        callback = function(args)
+          detach(args.buf)
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("BufEnter", {
+        callback = function(args)
+          if vim.bo[args.buf].buftype == "terminal" then
+            detach(args.buf)
+          end
+        end,
+      })
+    end,
+  },
 
   -- All NvChad plugins are lazy-loaded by default
   -- For a plugin to be loaded, you will need to set either `ft`, `cmd`, `keys`, `event`, or set `lazy = false`
