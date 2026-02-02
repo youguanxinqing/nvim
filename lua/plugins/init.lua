@@ -24,7 +24,9 @@ local default_plugins = {
       require("core.utils").load_mappings "nvterm"
     end,
     config = function(_, opts)
-      require "base46.term"
+      if not vim.g.disable_base46_term then
+        require "base46.term"
+      end
       require("nvterm").setup(opts)
     end,
   },
