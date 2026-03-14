@@ -170,11 +170,12 @@ local plugins = {
     end,
   },
   {
-    "simrat39/symbols-outline.nvim",
+    "hedyhli/outline.nvim",
     event = "VeryLazy",
-    cmd = "SymbolsOutline",
+    cmd = { "Outline", "OutlineOpen" },
     config = function()
-      require "custom.configs.symbols-outline"
+      -- require "custom.configs.symbols-outline"
+      require("outline").setup {}
     end,
   },
   {
