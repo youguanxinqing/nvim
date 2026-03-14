@@ -132,12 +132,13 @@ local plugins = {
 
   -- search words
   {
+    -- url = "https://codeberg.org/andyg/leap.nvim.git",
     "ggandor/flit.nvim",
     event = "VeryLazy",
     -- lazy = false,
     dependencies = {
       {
-        "ggandor/leap.nvim",
+        url = "https://codeberg.org/andyg/leap.nvim",
       },
     },
     config = function()
