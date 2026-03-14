@@ -495,6 +495,11 @@ local plugins = {
       },
     },
   },
+  {
+    "folke/neodev.nvim",
+    opts = {},
+  },
+
   -- {
   --   "ThePrimeagen/git-worktree.nvim",
   --   dependencies = { "nvim-telescope/telescope.nvim" },
