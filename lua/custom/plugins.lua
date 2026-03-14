@@ -18,7 +18,7 @@ local plugins = {
     dependencies = {
       -- format & linting
       {
-        "jose-elias-alvarez/null-ls.nvim",
+        "nvimtools/none-ls.nvim",
         config = function()
           require "custom.configs.null-ls"
         end,
@@ -53,6 +53,10 @@ local plugins = {
     "NvChad/nvterm",
     event = "VeryLazy",
     opts = overrides.nvterm,
+    config = function(_, opts)
+      -- Keep editor highlights, but avoid overriding terminal palette
+      require("nvterm").setup(opts)
+    end,
   },
 
   {
@@ -91,10 +95,32 @@ local plugins = {
   },
 
   -- To make a plugin not be loaded
-  -- {
-  --   "NvChad/nvim-colorizer.lua",
-  --   enabled = false
-  -- },
+  {
+    "NvChad/nvim-colorizer.lua",
+    event = "VeryLazy",
+    opts = {},
+    config = function(_, opts)
+      require("colorizer").setup(opts)
+
+      local function detach(buf)
+        pcall(require("colorizer").detach_from_buffer, buf)
+      end
+
+      vim.api.nvim_create_autocmd("TermOpen", {
+        callback = function(args)
+          detach(args.buf)
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("BufEnter", {
+        callback = function(args)
+          if vim.bo[args.buf].buftype == "terminal" then
+            detach(args.buf)
+          end
+        end,
+      })
+    end,
+  },
 
   -- All NvChad plugins are lazy-loaded by default
   -- For a plugin to be loaded, you will need to set either `ft`, `cmd`, `keys`, `event`, or set `lazy = false`
@@ -311,11 +337,150 @@ local plugins = {
       "kkharji/sqlite.lua",
     },
     config = function()
+      -- Ensure database directory exists
+      local history_path = vim.fn.expand "~/.local/share/nvim/databases"
+      if vim.fn.isdirectory(history_path) == 0 then
+        vim.fn.mkdir(history_path, "p")
+      end
       require("telescope").load_extension "smart_history"
     end,
     event = "VeryLazy",
     lazy = true,
   },
+  {
+    "zbirenbaum/copilot.lua",
+    event = "InsertEnter",
+    config = function()
+      require("copilot").setup {
+        suggestion = {
+          enabled = true,
+          auto_trigger = false,
+          debounce = 150,
+          keymap = {
+            accept = "<C-j>",
+            dismiss = "<Esc>",
+          },
+        },
+      }
+    end,
+  },
+  {
+    "folke/sidekick.nvim",
+    cmd = { "Sidekick" },
+    dependencies = {
+      "folke/snacks.nvim",
+    },
+    opts = {
+      -- add any options here
+      cli = {
+        -- mux = {
+        --   backend = "zellij",
+        --   enabled = true,
+        -- },
+        win = {
+          keys = {
+            prompt = { "<m-p>", "prompt", mode = "t", desc = "insert prompt or context" },
+          },
+        },
+      },
+      copilot = {
+        enabled = false,
+      },
+      nes = {
+        enabled = false,
+      },
+    },
+    keys = {
+      {
+        "<C-j>",
+        function()
+          -- if there is a next edit, jump to it, otherwise apply it if any
+          if not require("sidekick").nes_jump_or_apply() then
+            return "<C-j>" -- fallback to normal <C-j>
+          end
+        end,
+        expr = true,
+        desc = "Goto/Apply Next Edit Suggestion",
+      },
+      {
+        "<c-.>",
+        function()
+          require("sidekick.cli").toggle()
+        end,
+        desc = "Sidekick Toggle",
+        mode = { "n", "t", "i", "x" },
+      },
+      {
+        "<leader>aa",
+        function()
+          require("sidekick.cli").toggle()
+        end,
+        desc = "Sidekick Toggle CLI",
+      },
+      {
+        "<leader>as",
+        function()
+          require("sidekick.cli").select()
+        end,
+        -- Or to select only installed tools:
+        -- require("sidekick.cli").select({ filter = { installed = true } })
+        desc = "Select CLI",
+      },
+      {
+        "<leader>ad",
+        function()
+          require("sidekick.cli").close()
+        end,
+        desc = "Detach a CLI Session",
+      },
+      {
+        "<leader>at",
+        function()
+          require("sidekick.cli").send { msg = "{this}" }
+        end,
+        mode = { "x", "n" },
+        desc = "Send This",
+      },
+      {
+        "<leader>af",
+        function()
+          require("sidekick.cli").send { msg = "{file}" }
+        end,
+        desc = "Send File",
+      },
+      {
+        "<leader>av",
+        function()
+          require("sidekick.cli").send { msg = "{selection}" }
+        end,
+        mode = { "x" },
+        desc = "Send Visual Selection",
+      },
+      {
+        "<leader>ai",
+        function()
+          require("sidekick.cli").prompt()
+        end,
+        mode = { "n", "x" },
+        desc = "Sidekick Select Prompt",
+      },
+      -- Example of a keybinding to open Claude directly
+      {
+        "<leader>ac",
+        function()
+          require("sidekick.cli").toggle { name = "claude", focus = true }
+        end,
+        desc = "Sidekick Toggle Claude",
+      },
+    },
+  },
+  -- {
+  --   "ThePrimeagen/git-worktree.nvim",
+  --   dependencies = { "nvim-telescope/telescope.nvim" },
+  --   config = function()
+  --     require("telescope").load_extension "git_worktree"
+  --   end,
+  -- },
 }
 
 return plugins

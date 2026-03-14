@@ -1,8 +1,6 @@
 local on_attach = require("plugins.configs.lspconfig").on_attach
 local capabilities = require("plugins.configs.lspconfig").capabilities
 
-local lspconfig = require "lspconfig"
-
 -- fix: attempt to index field 'semanticTokensProvider' (a nil value)
 -- refs: https://github.com/neovim/nvim-lspconfig/issues/2542#issuecomment-1547019213
 local on_init = function(client, initialization_result)
@@ -15,6 +13,29 @@ end
 
 -- Function to get pyenv Python path
 local function get_pyenv_python_path()
+  -- First, check for .venv in current directory or project root
+  local cwd = vim.fn.getcwd()
+  local venv_python = cwd .. "/.venv/bin/python"
+
+  if vim.fn.filereadable(venv_python) == 1 then
+    return venv_python
+  end
+
+  -- Check for common subdirectory patterns (e.g., docling/.venv, backend/.venv)
+  -- Look for pyrightconfig.json to determine venv location
+  local pyright_config = cwd .. "/pyrightconfig.json"
+  if vim.fn.filereadable(pyright_config) == 1 then
+    local config_content = vim.fn.readfile(pyright_config)
+    local config_json = vim.fn.json_decode(table.concat(config_content, "\n"))
+
+    if config_json.venv and config_json.venv ~= "" then
+      local venv_from_config = cwd .. "/" .. config_json.venv .. "/bin/python"
+      if vim.fn.filereadable(venv_from_config) == 1 then
+        return venv_from_config
+      end
+    end
+  end
+
   -- Try to get Python path from pyenv
   local pyenv_python = vim.fn.system "pyenv which python 2>/dev/null"
   if vim.v.shell_error == 0 and pyenv_python ~= "" then
@@ -31,8 +52,15 @@ local function get_pyenv_python_path()
   return "python"
 end
 
--- Function to get pyenv versions directory
+-- Function to get venv path (for pyright to find virtual environments)
 local function get_pyenv_versions_path()
+  -- First check if there's a .venv in current directory
+  local cwd = vim.fn.getcwd()
+  if vim.fn.isdirectory(cwd .. "/.venv") == 1 then
+    return cwd
+  end
+
+  -- Otherwise use pyenv versions directory
   local pyenv_root = vim.fn.expand "~/.pyenv"
   local versions_path = pyenv_root .. "/versions"
 
@@ -43,11 +71,23 @@ local function get_pyenv_versions_path()
   return ""
 end
 
-lspconfig.lua_ls.setup {
+-- Configure lua_ls using new vim.lsp.config API
+vim.lsp.config("lua_ls", {
+  cmd = { "lua-language-server" },
   on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   filetypes = { "lua" },
+  root_markers = {
+    ".luarc.json",
+    ".luarc.jsonc",
+    ".luacheckrc",
+    ".stylua.toml",
+    "stylua.toml",
+    "selene.toml",
+    "selene.yml",
+    ".git",
+  },
   settings = {
     Lua = {
       runtime = {
@@ -76,7 +116,10 @@ lspconfig.lua_ls.setup {
       },
     },
   },
-}
+})
+
+-- Enable lua_ls
+vim.lsp.enable "lua_ls"
 
 local function on_attach_for_rust(client, bufnr)
   on_attach(client, bufnr)
@@ -86,31 +129,49 @@ local function on_attach_for_rust(client, bufnr)
   end
 end
 
-lspconfig.rust_analyzer.setup {
+-- Configure rust_analyzer using new vim.lsp.config API
+vim.lsp.config("rust_analyzer", {
+  cmd = { "rust-analyzer" },
   on_init = on_init,
   on_attach = on_attach_for_rust,
   capabilities = capabilities,
   filetypes = { "rust" },
-  root = lspconfig.util.root_pattern "Cargo.toml",
-}
+  root_markers = { "Cargo.toml" },
+})
 
-lspconfig.gopls.setup {
+-- Enable rust_analyzer
+vim.lsp.enable "rust_analyzer"
+
+-- Configure gopls using new vim.lsp.config API
+vim.lsp.config("gopls", {
+  cmd = { "gopls" },
   on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   filetypes = { "go", "gomod", "gowork", "gotmpl" },
-  root = lspconfig.util.root_pattern "go.mod",
+  root_markers = { "go.mod" },
   -- cmd_env = { GOFLAGS = "-tags=tag1,tag2" },
-}
+})
 
-lspconfig.pyright.setup {
+-- Enable gopls
+vim.lsp.enable "gopls"
+
+-- Configure pyright using new vim.lsp.config API
+vim.lsp.config("pyright", {
+  cmd = { "pyright-langserver", "--stdio" },
   on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
-  root_dir = function(fname)
-    local default_config = require("lspconfig.configs.pyright").default_config
-    return default_config.root_dir(fname) or require("lspconfig.util").find_git_ancestor(fname)
-  end,
+  root_markers = {
+    "pyrightconfig.json",
+    "pyproject.toml",
+    "setup.py",
+    "setup.cfg",
+    "requirements.txt",
+    "Pipfile",
+    ".git",
+  },
+  single_file_support = true,
   filetypes = { "python" },
   settings = {
     python = {
@@ -127,4 +188,10 @@ lspconfig.pyright.setup {
       },
     },
   },
-}
+})
+
+-- Enable pyright
+vim.lsp.enable "pyright"
+
+-- Copilot is handled by zbirenbaum/copilot.lua plugin, not via LSP
+-- Removed duplicate copilot LSP config to avoid conflicts and improve performance

@@ -39,7 +39,7 @@ local lsp_formatting = function(bufnr)
 end
 
 null_ls.setup({
-	debug = true,
+	debug = false,
 	sources = sources,
 	on_attach = function(client, bufnr)
 		if client.supports_method("textDocument/formatting") then

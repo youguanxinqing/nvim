@@ -36,5 +36,12 @@
       "    return json.dumps(asdict(self))"
       ],
     "description": "generate to_json method of dataclass"
+  },
+  "debug for Guan": {
+    "prefix": "guan-debug",
+    "body": [
+      "print(f\"--- youguan : {}\")"
+      ],
+    "description": "quickly debug for guan"
   }
 }
