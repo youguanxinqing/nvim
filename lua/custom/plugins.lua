@@ -245,16 +245,6 @@ local plugins = {
       },
     },
   },
-  -- {
-  -- 	"lvimuser/lsp-inlayhints.nvim",
-  -- 	event = "VeryLazy",
-  -- 	opts = function()
-  -- 		return require("custom.configs.lsp-inlayhints").opts
-  -- 	end,
-  -- 	config = function(_, opts)
-  -- 		require("custom.configs.lsp-inlayhints").setup(opts)
-  -- 	end,
-  -- },
   {
     "youguanxinqing/smartcolumn.nvim",
     event = "VeryLazy",
@@ -354,7 +344,7 @@ local plugins = {
       require("copilot").setup {
         suggestion = {
           enabled = true,
-          auto_trigger = false,
+          auto_trigger = true,
           debounce = 150,
           keymap = {
             accept = "<C-j>",
@@ -410,17 +400,6 @@ local plugins = {
       },
     },
     keys = {
-      {
-        "<C-j>",
-        function()
-          -- if there is a next edit, jump to it, otherwise apply it if any
-          if not require("sidekick").nes_jump_or_apply() then
-            return "<C-j>" -- fallback to normal <C-j>
-          end
-        end,
-        expr = true,
-        desc = "Goto/Apply Next Edit Suggestion",
-      },
       {
         "<c-.>",
         function()
