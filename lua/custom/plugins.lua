@@ -181,7 +181,6 @@ local plugins = {
   {
     "youguanxinqing/bookmark.nvim",
     event = "VeryLazy",
-    branch = "youguan",
     lazy = false,
     cmd = { "BookmarkToggle", "BookmarkList", "FilemarkToggle", "FilemarkList" },
     dependencies = {
