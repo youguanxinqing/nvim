@@ -347,8 +347,8 @@ local plugins = {
           auto_trigger = true,
           debounce = 150,
           keymap = {
-            accept = "<C-j>",
-            dismiss = "<Esc>",
+            accept = "<M-j>",
+            dismiss = false,
           },
         },
       }
