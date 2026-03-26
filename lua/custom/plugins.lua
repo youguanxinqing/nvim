@@ -391,6 +391,17 @@ local plugins = {
             prompt = { "<m-p>", "prompt", mode = "t", desc = "insert prompt or context" },
           },
         },
+        prompts = {
+          ["fix-single-test"] = "The current implementation is correct and working as intended — do NOT change the production code. Fix the failing tests to align with the actual behavior of the code. {file}",
+          buffers = "{buffers}",
+          file = "{file}",
+          line = "{line}",
+          position = "{position}",
+          quickfix = "{quickfix}",
+          selection = "{selection}",
+          ["function"] = "{function}",
+          class = "{class}",
+        },
       },
       copilot = {
         enabled = false,
