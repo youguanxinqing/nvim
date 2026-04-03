@@ -3,11 +3,14 @@ local utils = require "core.utils"
 
 M.blankline = {
   indent = {
+    -- char = "│",
+    char = "│",
     smart_indent_cap = true,
   },
   scope = {
     enabled = true,
-    show_start = true,
+    show_start = false,
+    show_end = false,
   },
   exclude = {
     filetypes = {

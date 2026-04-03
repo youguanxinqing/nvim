@@ -69,6 +69,15 @@ local default_plugins = {
     config = function(_, opts)
       require("core.utils").load_mappings "blankline"
       dofile(vim.g.base46_cache .. "blankline")
+      -- Replicate ibl v2's `show_first_indent_level = false`.
+      -- Must be registered before setup() so the initial render also uses the hook.
+      local hooks = require "ibl.hooks"
+      hooks.register(hooks.type.VIRTUAL_TEXT, function(_, _, _, virt_text)
+        if virt_text[1] and virt_text[1][1] == "│" then
+          virt_text[1] = { " ", { "@ibl.whitespace.char.1" } }
+        end
+        return virt_text
+      end)
       require("ibl").setup(opts)
     end,
   },
@@ -84,6 +93,9 @@ local default_plugins = {
       require("nvim-treesitter").install({
         "vim", "lua", "javascript", "c", "go",
         "python", "rust", "vimdoc", "regex", "comment",
+      })
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function() pcall(vim.treesitter.start) end,
       })
     end,
   },
@@ -208,6 +220,11 @@ local default_plugins = {
       require("core.utils").load_mappings "comment"
     end,
     config = function(_, opts)
+      opts = vim.tbl_deep_extend("force", opts or {}, {
+        pre_hook = function()
+          return vim.bo.commentstring
+        end,
+      })
       require("Comment").setup(opts)
     end,
   },
