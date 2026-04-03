@@ -2,25 +2,6 @@ local actions = require "telescope.actions"
 
 local M = {}
 
-M.treesitter = {
-  ensure_installed = {
-    "vim",
-    "lua",
-    "javascript",
-    "c",
-    "go",
-    "python",
-    "rust",
-    "vimdoc",
-  },
-  indent = {
-    -- enable = false,
-    disable = {
-      "rust",
-    },
-  },
-}
-
 M.mason = {
   ensure_installed = {
     -- lua stuff
@@ -106,10 +87,6 @@ M.whichkey = {
   win = {
     border = "double",
   },
-}
-
-M.indent_blankline = {
-  show_current_context_start = false,
 }
 
 M.nvterm = {

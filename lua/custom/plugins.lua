@@ -36,11 +36,6 @@ local plugins = {
     opts = overrides.mason,
   },
 
-  {
-    "nvim-treesitter/nvim-treesitter",
-    lazy = true,
-    opts = overrides.treesitter,
-  },
 
   {
     "nvim-tree/nvim-tree.lua",
@@ -273,14 +268,6 @@ local plugins = {
     end,
   },
 
-  {
-    "nvim-treesitter/nvim-tree-docs",
-    config = function()
-      require("nvim-treesitter/nvim-tree-docs").setup {
-        tree_docs = { enable = true },
-      }
-    end,
-  },
   {
     "MunifTanjim/nui.nvim",
     event = "VeryLazy",
