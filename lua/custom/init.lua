@@ -126,6 +126,32 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Fix: go.vim GoKeywordPrg (triggered by K) sets iskeyword+=. but fails to
+-- restore it on the Go buffer when `hor term` switches context to terminal.
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "*.go",
+  callback = function()
+    vim.opt_local.iskeyword:remove "."
+  end,
+})
+
 if vim.g.neovide then
   require "custom.neovide"
 end
+
+-- LSP utilities
+vim.api.nvim_create_user_command("LspLog", function()
+  vim.cmd("edit " .. vim.lsp.get_log_path())
+end, { desc = "Open LSP log file" })
+
+vim.api.nvim_create_user_command("LspRestart", function()
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  for _, client in ipairs(clients) do
+    vim.lsp.stop_client(client.id, true)
+  end
+  vim.defer_fn(function() vim.cmd("edit") end, 100)
+end, { desc = "Restart LSP clients for current buffer" })
+
+vim.api.nvim_create_user_command("LspStart", function()
+  vim.cmd("edit")
+end, { desc = "Start LSP for current buffer" })
