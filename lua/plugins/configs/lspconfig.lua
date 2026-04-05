@@ -16,12 +16,101 @@ vim.diagnostic.config {
   update_in_insert = false,
 }
 
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "single" })
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+local hover_config = { border = "single" }
+local signature_help_config = {
   border = "single",
   focusable = false,
   relative = "cursor",
-})
+}
+local lsp_util = require "vim.lsp.util"
+local sig_help_ns = vim.api.nvim_create_namespace "custom.lsp.signature_help"
+
+local default_hover = vim.lsp.buf.hover
+vim.lsp.buf.hover = function(config)
+  config = vim.tbl_deep_extend("force", vim.deepcopy(hover_config), config or {})
+  return default_hover(config)
+end
+
+local default_signature_help = vim.lsp.buf.signature_help
+vim.lsp.buf.signature_help = function(config)
+  config = vim.tbl_deep_extend("force", vim.deepcopy(signature_help_config), config or {})
+  return default_signature_help(config)
+end
+
+vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
+  config = vim.tbl_deep_extend("force", vim.deepcopy(hover_config), config or {})
+  if vim.api.nvim_get_current_buf() ~= ctx.bufnr then
+    return
+  end
+
+  if not (result and result.contents) then
+    if config.silent ~= true then
+      vim.notify "No information available"
+    end
+    return
+  end
+
+  local format = "markdown"
+  local contents
+  if type(result.contents) == "table" and result.contents.kind == "plaintext" then
+    format = "plaintext"
+    contents = vim.split(result.contents.value or "", "\n", { trimempty = true })
+  else
+    contents = lsp_util.convert_input_to_markdown_lines(result.contents)
+  end
+
+  if vim.tbl_isempty(contents) then
+    if config.silent ~= true then
+      vim.notify "No information available"
+    end
+    return
+  end
+
+  config.focus_id = ctx.method
+  return lsp_util.open_floating_preview(contents, format, config)
+end
+
+vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+  config = vim.tbl_deep_extend("force", vim.deepcopy(signature_help_config), config or {})
+  if vim.api.nvim_get_current_buf() ~= ctx.bufnr then
+    return
+  end
+
+  if not (result and result.signatures and result.signatures[1]) then
+    if config.silent ~= true then
+      print "No signature help available"
+    end
+    return
+  end
+
+  local client = assert(vim.lsp.get_client_by_id(ctx.client_id))
+  local triggers =
+    vim.tbl_get(client.server_capabilities, "signatureHelpProvider", "triggerCharacters")
+  local ft = vim.bo[ctx.bufnr].filetype
+  local lines, hl = lsp_util.convert_signature_help_to_markdown_lines(result, ft, triggers)
+
+  if not lines or vim.tbl_isempty(lines) then
+    if config.silent ~= true then
+      print "No signature help available"
+    end
+    return
+  end
+
+  config.focus_id = ctx.method
+  local bufnr, winid = lsp_util.open_floating_preview(lines, "markdown", config)
+
+  if hl then
+    vim.hl.range(
+      bufnr,
+      sig_help_ns,
+      "LspSignatureActiveParameter",
+      { hl[1], hl[2] },
+      { hl[3], hl[4] }
+    )
+  end
+
+  return bufnr, winid
+end
 
 local M = {}
 local utils = require "core.utils"
