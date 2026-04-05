@@ -126,7 +126,7 @@ M.setup = function(client)
     group = group,
     pattern = "<buffer>",
     callback = function()
-      local active_clients = vim.lsp.get_active_clients()
+      local active_clients = vim.lsp.get_clients { bufnr = 0 }
       if #active_clients < 1 then
         return
       end

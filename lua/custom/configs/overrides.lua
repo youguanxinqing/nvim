@@ -13,6 +13,7 @@ M.mason = {
     "gopls",
     "rust-analyzer",
     "copilot-language-server",
+    "prettier",
   },
 }
 
