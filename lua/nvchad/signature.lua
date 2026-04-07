@@ -100,7 +100,8 @@ local open_signature = function()
   end
 
   if triggered then
-    local params = util.make_position_params()
+    local client = vim.lsp.get_clients({ bufnr = 0 })[1]
+    local params = util.make_position_params(0, client and client.offset_encoding or "utf-16")
     local handler_config = {
       border = "single",
       focusable = false,

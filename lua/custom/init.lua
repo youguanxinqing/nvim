@@ -78,6 +78,7 @@ vim.api.nvim_create_user_command(
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "python" },
   callback = function()
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     vim.api.nvim_create_user_command(
       "PyRun",
       'lua require("custom.configs.run-anything").run_current_script_for_py()',
