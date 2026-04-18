@@ -69,16 +69,32 @@ local default_plugins = {
     config = function(_, opts)
       require("core.utils").load_mappings "blankline"
       dofile(vim.g.base46_cache .. "blankline")
-      -- Replicate ibl v2's `show_first_indent_level = false`.
-      -- Must be registered before setup() so the initial render also uses the hook.
-      local hooks = require "ibl.hooks"
-      hooks.register(hooks.type.VIRTUAL_TEXT, function(_, _, _, virt_text)
-        if virt_text[1] and virt_text[1][1] == "│" then
-          virt_text[1] = { " ", { "@ibl.whitespace.char.1" } }
-        end
-        return virt_text
-      end)
-      require("ibl").setup(opts)
+      local has_ibl, ibl = pcall(require, "ibl")
+      local has_hooks, hooks = pcall(require, "ibl.hooks")
+
+      if has_ibl and has_hooks then
+        -- Replicate ibl v2's `show_first_indent_level = false`.
+        -- Must be registered before setup() so the initial render also uses the hook.
+        hooks.register(hooks.type.VIRTUAL_TEXT, function(_, _, _, virt_text)
+          if virt_text[1] and virt_text[1][1] == "│" then
+            virt_text[1] = { " ", { "@ibl.whitespace.char.1" } }
+          end
+          return virt_text
+        end)
+        ibl.setup(opts)
+        return
+      end
+
+      require("indent_blankline").setup {
+        char = opts.indent.char,
+        use_treesitter = true,
+        show_first_indent_level = false,
+        show_current_context = opts.scope.enabled,
+        show_current_context_start = opts.scope.show_start,
+        filetype_exclude = opts.exclude.filetypes,
+        buftype_exclude = opts.exclude.buftypes,
+        space_char_blankline = " ",
+      }
     end,
   },
 
@@ -89,11 +105,27 @@ local default_plugins = {
     build = ":TSUpdate",
     config = function()
       dofile(vim.g.base46_cache .. "syntax")
-      require("nvim-treesitter").setup {}
-      require("nvim-treesitter").install({
-        "vim", "lua", "javascript", "c", "go",
-        "python", "rust", "vimdoc", "regex", "comment",
-      })
+      require("nvim-treesitter").setup {
+        install_dir = vim.fn.stdpath "data" .. "/site",
+        ensure_installed = {
+          "vim",
+          "lua",
+          "javascript",
+          "c",
+          "go",
+          "python",
+          "rust",
+          "vimdoc",
+          "regex",
+          "comment",
+        },
+        highlight = {
+          enable = true,
+        },
+        indent = {
+          enable = true,
+        },
+      }
       vim.api.nvim_create_autocmd("FileType", {
         callback = function() pcall(vim.treesitter.start) end,
       })

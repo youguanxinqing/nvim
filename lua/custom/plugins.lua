@@ -36,7 +36,6 @@ local plugins = {
     opts = overrides.mason,
   },
 
-
   {
     "nvim-tree/nvim-tree.lua",
     lazy = true,
