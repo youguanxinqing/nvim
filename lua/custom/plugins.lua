@@ -14,7 +14,9 @@ local plugins = {
 
   {
     "neovim/nvim-lspconfig",
-    lazy = true,
+    init = function()
+      require("core.utils").lazy_load "nvim-lspconfig"
+    end,
     config = function()
       require "plugins.configs.lspconfig"
       require "custom.configs.lspconfig"
@@ -125,17 +127,10 @@ local plugins = {
 
   -- search words
   {
-    -- url = "https://codeberg.org/andyg/leap.nvim.git",
-    "ggandor/flit.nvim",
+    url = "https://codeberg.org/andyg/leap.nvim",
     event = "VeryLazy",
-    -- lazy = false,
-    dependencies = {
-      {
-        url = "https://codeberg.org/andyg/leap.nvim",
-      },
-    },
     config = function()
-      require "custom.configs.flit"
+      require "custom.configs.leap"
     end,
   },
   {
