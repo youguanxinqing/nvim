@@ -140,19 +140,4 @@ if vim.g.neovide then
   require "custom.neovide"
 end
 
--- LSP utilities
-vim.api.nvim_create_user_command("LspLog", function()
-  vim.cmd.edit(vim.lsp.log.get_filename())
-end, { desc = "Open LSP log file" })
-
-vim.api.nvim_create_user_command("LspRestart", function()
-  local clients = vim.lsp.get_clients({ bufnr = 0 })
-  for _, client in ipairs(clients) do
-    vim.lsp.stop_client(client.id, true)
-  end
-  vim.defer_fn(function() vim.cmd("edit") end, 100)
-end, { desc = "Restart LSP clients for current buffer" })
-
-vim.api.nvim_create_user_command("LspStart", function()
-  vim.cmd("edit")
-end, { desc = "Start LSP for current buffer" })
+require("custom.configs.lsp-manager").setup()
