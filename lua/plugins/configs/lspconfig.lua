@@ -121,6 +121,10 @@ M.on_attach = function(client, bufnr)
   client.server_capabilities.documentFormattingProvider = false
   client.server_capabilities.documentRangeFormattingProvider = false
 
+  if client:supports_method "textDocument/definition" then
+    vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"
+  end
+
   utils.load_mappings("lspconfig", { buffer = bufnr })
 
   if client.server_capabilities.signatureHelpProvider then
@@ -169,11 +173,20 @@ vim.lsp.config("lua_ls", {
   },
   settings = {
     Lua = {
+      runtime = {
+        path = {
+          "lua/?.lua",
+          "lua/?/init.lua",
+          "?.lua",
+          "?/init.lua",
+        },
+      },
       diagnostics = {
         globals = { "vim" },
       },
       workspace = {
         library = {
+          [vim.fn.stdpath "config" .. "/lua"] = true,
           [vim.fn.expand "$VIMRUNTIME/lua"] = true,
           [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
           [vim.fn.stdpath "data" .. "/lazy/ui/nvchad_types"] = true,

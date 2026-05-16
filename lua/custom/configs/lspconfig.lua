@@ -93,11 +93,17 @@ vim.lsp.config("lua_ls", {
       runtime = {
         -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
         version = "LuaJIT",
+        path = {
+          "lua/?.lua",
+          "lua/?/init.lua",
+          "?.lua",
+          "?/init.lua",
+        },
       },
       diagnostics = {
         -- Get the language server to recognize the `vim` global
         globals = { "vim" },
-        disbale = {
+        disable = {
           "missing-fields",
         },
         severity = {
@@ -106,6 +112,7 @@ vim.lsp.config("lua_ls", {
       },
       workspace = {
         library = {
+          [vim.fn.stdpath "config" .. "/lua"] = true,
           [vim.fn.expand "$VIMRUNTIME/lua"] = true,
           [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
           [vim.fn.stdpath "data" .. "/lazy/extensions/nvchad_types"] = true,

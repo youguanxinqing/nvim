@@ -465,8 +465,16 @@ local plugins = {
     },
   },
   {
-    "folke/neodev.nvim",
-    opts = {},
+    "folke/lazydev.nvim",
+    ft = "lua",
+    cmd = "LazyDev",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+        { path = "lazy.nvim", words = { "lazy" } },
+        { path = "nvim-lspconfig", words = { "vim%.lsp%.config" } },
+      },
+    },
   },
 
   -- {
