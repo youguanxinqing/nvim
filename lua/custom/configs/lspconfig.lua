@@ -1,6 +1,22 @@
 local on_attach = require("plugins.configs.lspconfig").on_attach
 local capabilities = require("plugins.configs.lspconfig").capabilities
 
+local function lua_workspace_library()
+  local library = {
+    [vim.fn.stdpath "config" .. "/lua"] = true,
+    [vim.fn.expand "$VIMRUNTIME/lua"] = true,
+    [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
+    [vim.fn.stdpath "data" .. "/lazy/extensions/nvchad_types"] = true,
+    [vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy"] = true,
+  }
+
+  for _, path in ipairs(vim.fn.glob(vim.fn.stdpath "data" .. "/lazy/*/lua", false, true)) do
+    library[path] = true
+  end
+
+  return library
+end
+
 -- fix: attempt to index field 'semanticTokensProvider' (a nil value)
 -- refs: https://github.com/neovim/nvim-lspconfig/issues/2542#issuecomment-1547019213
 local on_init = function(client, initialization_result)
@@ -111,13 +127,7 @@ vim.lsp.config("lua_ls", {
         },
       },
       workspace = {
-        library = {
-          [vim.fn.stdpath "config" .. "/lua"] = true,
-          [vim.fn.expand "$VIMRUNTIME/lua"] = true,
-          [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
-          [vim.fn.stdpath "data" .. "/lazy/extensions/nvchad_types"] = true,
-          [vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy"] = true,
-        },
+        library = lua_workspace_library(),
         maxPreload = 100000,
         preloadFileSize = 10000,
       },

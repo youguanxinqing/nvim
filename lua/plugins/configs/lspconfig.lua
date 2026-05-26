@@ -114,6 +114,7 @@ end
 
 local M = {}
 local utils = require "core.utils"
+require("custom.configs.lsp-tagfunc").setup()
 
 -- export on_attach & capabilities for custom lspconfigs
 
@@ -122,7 +123,7 @@ M.on_attach = function(client, bufnr)
   client.server_capabilities.documentRangeFormattingProvider = false
 
   if client:supports_method "textDocument/definition" then
-    vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"
+    vim.bo[bufnr].tagfunc = "v:lua.custom_lsp_tagfunc"
   end
 
   utils.load_mappings("lspconfig", { buffer = bufnr })
@@ -156,6 +157,22 @@ M.capabilities.textDocument.completion.completionItem = {
   },
 }
 
+local function lua_workspace_library()
+  local library = {
+    [vim.fn.stdpath "config" .. "/lua"] = true,
+    [vim.fn.expand "$VIMRUNTIME/lua"] = true,
+    [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
+    [vim.fn.stdpath "data" .. "/lazy/ui/nvchad_types"] = true,
+    [vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy"] = true,
+  }
+
+  for _, path in ipairs(vim.fn.glob(vim.fn.stdpath "data" .. "/lazy/*/lua", false, true)) do
+    library[path] = true
+  end
+
+  return library
+end
+
 -- Configure lua_ls using new vim.lsp.config API
 vim.lsp.config("lua_ls", {
   cmd = { "lua-language-server" },
@@ -185,13 +202,7 @@ vim.lsp.config("lua_ls", {
         globals = { "vim" },
       },
       workspace = {
-        library = {
-          [vim.fn.stdpath "config" .. "/lua"] = true,
-          [vim.fn.expand "$VIMRUNTIME/lua"] = true,
-          [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
-          [vim.fn.stdpath "data" .. "/lazy/ui/nvchad_types"] = true,
-          [vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy"] = true,
-        },
+        library = lua_workspace_library(),
         maxPreload = 100000,
         preloadFileSize = 10000,
       },
