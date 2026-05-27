@@ -367,6 +367,11 @@ local plugins = {
         --   backend = "zellij",
         --   enabled = true,
         -- },
+        tools = {
+          claude = {
+            cmd = { "claude", "--permission-mode", "auto" },
+          },
+        },
         win = {
           keys = {
             prompt = { "<m-p>", "prompt", mode = "t", desc = "insert prompt or context" },
