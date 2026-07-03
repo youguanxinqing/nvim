@@ -369,7 +369,7 @@ local plugins = {
         -- },
         tools = {
           claude = {
-            cmd = { "claude", "--permission-mode", "auto" },
+            cmd = { "claude", "--permission-mode", "auto", "--model", "claude-opus-4-7" },
           },
         },
         win = {
