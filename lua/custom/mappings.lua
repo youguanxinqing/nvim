@@ -58,6 +58,24 @@ M.general = {
       "toggle todo list",
     },
 
+    -- typora
+    ["<Leader>op"] = {
+      function()
+        if vim.bo.filetype ~= "markdown" then
+          vim.notify("Not a markdown buffer", vim.log.levels.WARN)
+          return
+        end
+        vim.fn.jobstart({ "open", "-a", "Typora", vim.api.nvim_buf_get_name(0) }, { detach = true })
+      end,
+      "open current markdown in Typora",
+    },
+    ["<Leader>od"] = {
+      function()
+        vim.fn.jobstart({ "open", "-a", "Typora", require("custom.utils.buf").get_abs_buf_dir() }, { detach = true })
+      end,
+      "open current buffer dir in Typora",
+    },
+
     -- windows
     ["<Leader>wo"] = {
       function()

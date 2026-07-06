@@ -295,7 +295,7 @@ local plugins = {
   },
   {
     "MagicDuck/grug-far.nvim",
-    tag = "1.6.3",
+    tag = "1.6.72",
     config = function()
       require("grug-far").setup {}
     end,
