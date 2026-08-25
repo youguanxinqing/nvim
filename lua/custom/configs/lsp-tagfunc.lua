@@ -34,9 +34,10 @@ local function retry_inside_word(pattern, flags)
       for _, candidate in ipairs(candidates) do
         if candidate >= start_col and candidate <= end_col and candidate ~= cursor_col then
           vim.api.nvim_win_set_cursor(win, { row, candidate - 1 })
-          local tags = vim.lsp.tagfunc(pattern, flags)
+          -- ponytail: pcall so an error in vim.lsp.tagfunc can't strand the cursor mid-word
+          local ok, tags = pcall(vim.lsp.tagfunc, pattern, flags)
           vim.api.nvim_win_set_cursor(win, { row, col })
-          if not is_nil_or_empty(tags) then
+          if ok and not is_nil_or_empty(tags) then
             return tags
           end
         end
@@ -51,8 +52,11 @@ local function retry_inside_word(pattern, flags)
 end
 
 function M.tagfunc(pattern, flags)
-  local tags = vim.lsp.tagfunc(pattern, flags)
-  if not is_nil_or_empty(tags) then
+  -- ponytail: pcall so a broken vim.lsp internals (e.g. runtime swapped out by a
+  -- `brew upgrade neovim` mid-session) degrades to the normal 'tag not found'
+  -- path instead of aborting the jump with a stack trace
+  local ok, tags = pcall(vim.lsp.tagfunc, pattern, flags)
+  if ok and not is_nil_or_empty(tags) then
     return tags
   end
 
