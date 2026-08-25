@@ -76,6 +76,32 @@ M.general = {
       "open current buffer dir in Typora",
     },
 
+    -- tig (fullscreen in a new tab; q closes tig and the tab)
+    ["<Leader>gB"] = {
+      function()
+        require("custom.configs.tig").blame()
+      end,
+      "tig blame current file at cursor line",
+    },
+    ["<Leader>gL"] = {
+      function()
+        require("custom.configs.tig").log_file()
+      end,
+      "tig log current file",
+    },
+    ["<Leader>gS"] = {
+      function()
+        require("custom.configs.tig").status()
+      end,
+      "tig status",
+    },
+    ["<Leader>gP"] = {
+      function()
+        require("custom.configs.tig").pickaxe()
+      end,
+      "tig pickaxe (-S): commits that add/remove a string",
+    },
+
     -- windows
     ["<Leader>wo"] = {
       function()
@@ -99,6 +125,15 @@ M.general = {
 
   i = {
     ["<C-c>"] = { "<Esc>", "exit insert mode", opts = { nowait = true } },
+  },
+
+  v = {
+    ["<Leader>gP"] = {
+      function()
+        require("custom.configs.tig").pickaxe_selection()
+      end,
+      "tig pickaxe on selection",
+    },
   },
 }
 
