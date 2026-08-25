@@ -3,18 +3,23 @@ local table_utils = require "custom.utils.table"
 
 local M = {}
 
---- M.get_relative_buf_dir returns relative dir path of buffer
---- eg: {workspace}/path/to/dir_of_buffer
-function M.get_relative_buf_dir()
-  local relative_filepath = string_utils.replace(vim.api.nvim_buf_get_name(0), vim.loop.cwd(), "")
-  local chunks = string_utils.split(relative_filepath, "/")
-  chunks[vim.fn.len(chunks)] = ""
+-- M.get_abs_buf_dir returns abs dir path of buffer, without a trailing "/".
+--- Unnamed buffers fall back to cwd.
+--- eg: {system_root}/path/to/dir_of_buffer
+function M.get_abs_buf_dir()
+  return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p:h")
+end
 
-  local dir = table_utils.join(chunks, "/")
-  if dir == "" then
-    return "."
+--- M.get_relative_buf_dir returns dir path of buffer relative to cwd,
+--- with a trailing "/". Falls back to the absolute path when the buffer
+--- lives outside cwd.
+--- eg: path/to/dir_of_buffer/
+function M.get_relative_buf_dir()
+  local dir = M.get_abs_buf_dir()
+  if dir == vim.loop.cwd() then
+    return "./"
   end
-  return dir
+  return vim.fn.fnamemodify(dir, ":.") .. "/"
 end
 
 M.get_cur_buf_dir = M.get_relative_buf_dir
@@ -36,15 +41,6 @@ function M.get_abs_buf_file()
 end
 
 M.get_cur_buf_path = M.get_abs_buf_file
-
--- M.get_abs_buf_dir returns abs dir path of buffer
---- eg: {system_root}/path/to/dir_of_buffer
-function M.get_abs_buf_dir()
-  local abs_path = vim.api.nvim_buf_get_name(0)
-  local chunks = string_utils.split(abs_path, "/")
-  chunks[vim.fn.len(chunks)] = ""
-  return table_utils.join(chunks, "/")
-end
 
 -- M.get_buf_name returns name of buffer
 --- eg: xxx.lua
@@ -119,6 +115,28 @@ function M.listed_buf_infos()
   end
   return infos
 end
+
+local function test_dir_functions()
+  local cwd = vim.loop.cwd()
+
+  vim.cmd.edit(cwd .. "/lua/custom/utils/buf.lua")
+  assert(M.get_abs_buf_dir() == cwd .. "/lua/custom/utils", M.get_abs_buf_dir())
+  assert(M.get_relative_buf_dir() == "lua/custom/utils/", M.get_relative_buf_dir())
+
+  vim.cmd.edit(cwd .. "/init.lua")
+  assert(M.get_abs_buf_dir() == cwd, M.get_abs_buf_dir())
+  -- "./" not ".", callers append "*.go" to it
+  assert(M.get_relative_buf_dir() == "./", M.get_relative_buf_dir())
+
+  -- outside cwd: keeps the leading "/" instead of silently dropping it
+  vim.cmd.edit "/tmp/whatever/file.lua"
+  assert(M.get_abs_buf_dir() == "/tmp/whatever", M.get_abs_buf_dir())
+  assert(M.get_relative_buf_dir() == "/tmp/whatever/", M.get_relative_buf_dir())
+
+  print "dir functions ok"
+end
+
+-- test_dir_functions()
 
 local function test_functions()
   print("get_cur_buf_dir:", vim.inspect(M.get_cur_buf_dir()))
