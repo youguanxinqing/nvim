@@ -105,26 +105,27 @@ local default_plugins = {
     build = ":TSUpdate",
     config = function()
       dofile(vim.g.base46_cache .. "syntax")
-      require("nvim-treesitter").setup {
-        install_dir = vim.fn.stdpath "data" .. "/site",
-        ensure_installed = {
-          "vim",
-          "lua",
-          "javascript",
-          "c",
-          "go",
-          "python",
-          "rust",
-          "vimdoc",
-          "regex",
-          "comment",
-        },
-        highlight = {
-          enable = true,
-        },
-        indent = {
-          enable = true,
-        },
+      require("nvim-treesitter").setup { install_dir = vim.fn.stdpath "data" .. "/site" }
+      -- ponytail: main branch's setup{} only understands `install_dir`; ensure_installed/
+      -- highlight/indent there are silently dropped. Parsers go through install(), which
+      -- skips ones already on disk; highlight is the FileType autocmd below.
+      require("nvim-treesitter").install {
+        "vim",
+        "lua",
+        "javascript",
+        "c",
+        "go",
+        "python",
+        "rust",
+        "vimdoc",
+        "regex",
+        "comment",
+        "yaml",
+        "json",
+        "toml",
+        "markdown",
+        "markdown_inline",
+        "bash",
       }
       vim.api.nvim_create_autocmd("FileType", {
         callback = function() pcall(vim.treesitter.start) end,
